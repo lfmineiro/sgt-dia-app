@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.js";
-import { criarAlunoSchema } from "../schemas/alunos.schemas.js";
+import { alunoNumeroParamSchema, atualizarAlunoSchema, criarAlunoSchema } from "../schemas/alunos.schemas.js";
 
 export const criarAluno = async (req: Request, res: Response) => {
   try {
@@ -33,11 +33,65 @@ export const listarAlunos = async (req: Request, res: Response) => {
       anoFormatura: 'asc'
     }
   })
-  res.status(201).json(getAlunos);
+  res.status(200).json(getAlunos);
 }
 
-// export const editarAlunos = async (res: Response, req: Request) => {
-//   const { id } = req.params
-//   const dadosValidados = criarAlunoSchema.parse(req.body)
-// }
+export const atualizarAluno = async (req: Request, res: Response) => {
+  const paramResult = alunoNumeroParamSchema.parse(req.params)
+
+  const numeroAtual = paramResult.numero
+  const dadosValidados = atualizarAlunoSchema.parse(req.body)
+  
+  // Repetindo código, vou refatorar logo
+  // Verificar unicidade
+    const alunoExistente = await prisma.aluno.findUnique({
+      where: { numero: numeroAtual }
+    })
+    if (!alunoExistente) {
+        return res.status(404).json({ error: "Aluno não encontrado" });
+      }
+
+        // Se for alterar o número, valida conflito
+    if ("numero" in dadosValidados && dadosValidados.numero !== numeroAtual) {
+      const conflito = await prisma.aluno.findUnique({
+        where: { numero: dadosValidados.numero },
+      });
+
+      if (conflito) {
+        return res.status(409).json({ error: "Novo número já está em uso." });
+      }
+
+    }
+    const alunoAtualizado = await prisma.aluno.update({
+      where: {numero: numeroAtual},
+      data: {
+        ...dadosValidados
+      }
+    })
+    
+    return res.status(200).json(alunoAtualizado)
+}
+
+export const deletarAluno = async (req: Request, res: Response) => {
+  const paramResult = alunoNumeroParamSchema.parse(req.params)
+
+  const numero = paramResult.numero
+
+   // Repetindo código, vou refatorar logo
+  // Verificar unicidade
+    const alunoExistente = await prisma.aluno.findUnique({
+      where: { numero: numero }
+    })
+ 
+    if (!alunoExistente) {
+        return res.status(404).json({ error: "Aluno não encontrado" });
+      }
+
+    await prisma.aluno.delete({
+      where: { numero },
+    });
+
+    return res.status(204).send();
+
+}
  
