@@ -16,13 +16,6 @@ COPY prisma.config.ts ./
 # Copy source code
 COPY . .
 
-# Generate Prisma Client
-RUN npx prisma generate
-
-# Copy source code
-COPY src ./src
-COPY tsconfig.json ./
-
 # Expose port
 EXPOSE 3000
 

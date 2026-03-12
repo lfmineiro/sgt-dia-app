@@ -1,14 +1,125 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum StatusServico {
+  EM_ANDAMENTO
+  FECHADO
+}
+
+enum FuncaoGuarnicao {
+  SGT_DIA
+  CB_DIA
+  PLANTAO
+  PERMANENCIA
+}
+
+enum StatusAlteracao {
+  NOVA
+  PENDENTE
+  RESOLVIDA
+}
+
+
+model Aluno {
+  numero       Int         @id
+  nomeGuerra   String
+  nomeCompleto String
+  anoFormatura Int
+  curso        String?
+  
+  // Relacionamentos
+  guarnicoes   Guarnicao[]
+
+  @@map("alunos")
+}
+
+model Servico {
+  id         String        @id @default(uuid())
+  data       DateTime      @unique
+  status     StatusServico @default(EM_ANDAMENTO)
+  
+  // Relacionamentos
+  guarnicoes Guarnicao[]
+  speds      Sped[]
+  alteracoes Alteracao[]
+
+  @@map("servicos")
+}
+
+model Guarnicao {
+  id          String          @id @default(uuid())
+  servicoId   String
+  alunoNumero Int
+  funcao      FuncaoGuarnicao
+
+  // Relacionamentos
+  servico     Servico  @relation(fields: [servicoId], references: [id])
+  aluno       Aluno    @relation(fields: [alunoNumero], references: [numero])
+  escalas     Escala[]
+
+  @@map("guarnicoes")
+}
+
+model Escala {
+  id          String @id @default(uuid())
+  guarnicaoId String
+  posto       String
+  turno       Int
+
+  // Relacionamentos
+  guarnicao   Guarnicao @relation(fields: [guarnicaoId], references: [id])
+
+  @@map("escalas")
+}
+
+model Sped {
+  id              String  @id @default(uuid())
+  servicoId       String
+  companhia       String
+  recebimento     String
+  armamento       String?
+  punidos         String  @default("S/A")
+  materialCarga   String  @default("S/A")
+  visitaMedica    String  @default("S/A")
+  alunosDispensa  String  @default("S/A")
+  refeicoes       String  @default("S/A")
+  ronda           String  @default("S/A")
+  revistaRecolher String  @default("S/A")
+  ocorrencias     String  @default("S/A")
+  passagem        String
+
+  // Relacionamentos
+  servico         Servico @relation(fields: [servicoId], references: [id])
+
+  @@map("speds")
+}
+
+model Alteracao {
+  id        String          @id @default(uuid())
+  servicoId String
+  local     String
+  descricao String
+  fotoUrl   String?
+  status    StatusAlteracao @default(NOVA)
+  criadoEm  DateTime        @default(now())
+
+  // Relacionamentos
+  servico   Servico @relation(fields: [servicoId], references: [id])
+
+  @@map("alteracoes")
+}
+
+model Aviso {
+  id        String   @id @default(uuid())
+  titulo    String
+  descricao String
+  ativo     Boolean  @default(true)
+  criadoEm  DateTime @default(now())
+
+  @@map("avisos")
 }

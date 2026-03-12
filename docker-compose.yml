@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: adminpassword
       POSTGRES_DB: sped_db
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
 
@@ -16,6 +16,7 @@ services:
       context: ./backend-app
       dockerfile: Dockerfile
     container_name: sgt_dia_backend
+    command: sh -c "npm install && npx prisma generate && npm start"
     environment:
       - DATABASE_URL=postgresql://admin:adminpassword@db:5432/sped_db
       - NODE_ENV=development
@@ -23,7 +24,7 @@ services:
       - "3000:3000"
     volumes:
       - ./backend-app:/app
-      - /app/node_modules
+      - backend_node_modules:/app/node_modules
     depends_on:
       - db
 
@@ -42,3 +43,4 @@ services:
 
 volumes:
   pgdata:
+  backend_node_modules:
