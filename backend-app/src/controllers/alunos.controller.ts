@@ -1,25 +1,17 @@
 import type { Request, Response } from "express";
 import { prisma } from "../lib/prisma.js";
 import { alunoNumeroParamSchema, atualizarAlunoSchema, criarAlunoSchema } from "../schemas/alunos.schemas.js";
+import { atualizarAlunoService, criarAlunoService, deletarAlunoService, listarAlunosService } from "../services/alunos.service.js";
+
 
 export const criarAluno = async (req: Request, res: Response) => {
-  try {
-    
+  try {   
     const dadosValidados = criarAlunoSchema.parse(req.body)
-  
-    // Verificar unicidade
-    const alunoExistente = await prisma.aluno.findUnique({
-      where: { numero: dadosValidados.numero }
-    })
-    // Erro 409 pois conflita com o estado atual do servidor 
-    if (alunoExistente) {
-        return res.status(409).json({ error: "Aluno já cadastrado." });
-      }
-    const novoAluno = await prisma.aluno.create({
-      data: dadosValidados
-    })
-      return res.status(201).json(novoAluno)
-  } catch (err) {
+    const novoAluno = await criarAlunoService(dadosValidados)
+    return res.status(201).json(novoAluno)
+  } catch (err: any) {
+    if(err.message === "ALUNO_JA_CADASTRADO") return res.status(409).json({error: "Aluno já cadastrado"});
+    
     console.error('Erro ao criar o aluno: ', err)
     return res.status(500).json({
       error: "Erro interno do servidor ao processar a requisição"
@@ -28,70 +20,58 @@ export const criarAluno = async (req: Request, res: Response) => {
 } 
 
 export const listarAlunos = async (req: Request, res: Response) => {
-  const getAlunos = await prisma.aluno.findMany({
-    orderBy: {
-      anoFormatura: 'asc'
-    }
-  })
-  res.status(200).json(getAlunos);
+  try{
+    const getAlunos = await listarAlunosService();
+    res.status(200).json(getAlunos);
+  } catch (err) {
+    console.error("Erro ao listar os Alunos")
+    return res.status(500).json({
+      error: "Erro interno do servidor ao processar a informação"
+    })
+  }
 }
 
 export const atualizarAluno = async (req: Request, res: Response) => {
-  const paramResult = alunoNumeroParamSchema.parse(req.params)
-
-  const numeroAtual = paramResult.numero
-  const dadosValidados = atualizarAlunoSchema.parse(req.body)
+  try {
+    const paramResult = alunoNumeroParamSchema.parse(req.params)
   
-  // Repetindo código, vou refatorar logo
-  // Verificar unicidade
-    const alunoExistente = await prisma.aluno.findUnique({
-      where: { numero: numeroAtual }
-    })
-    if (!alunoExistente) {
-        return res.status(404).json({ error: "Aluno não encontrado" });
-      }
-
-        // Se for alterar o número, valida conflito
-    if ("numero" in dadosValidados && dadosValidados.numero !== numeroAtual) {
-      const conflito = await prisma.aluno.findUnique({
-        where: { numero: dadosValidados.numero },
-      });
-
-      if (conflito) {
-        return res.status(409).json({ error: "Novo número já está em uso." });
-      }
-
-    }
-    const alunoAtualizado = await prisma.aluno.update({
-      where: {numero: numeroAtual},
-      data: {
-        ...dadosValidados
-      }
-    })
+    const numeroAtual = paramResult.numero
+    const dadosValidados = atualizarAlunoSchema.parse(req.body)
     
-    return res.status(200).json(alunoAtualizado)
+      const alunoAtualizado = await atualizarAlunoService(numeroAtual, dadosValidados)
+      
+      return res.status(200).json(alunoAtualizado)
+  } catch (err:any) {
+    if(err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({
+        error: "Aluno não encontrado"
+      })
+      if(err.message === "NUMERO_EM_USO") return res.status(409).json({
+        error: "Novo número já está em uso"
+      })
+      console.error('Erro ao atualizar aluno: ', err)
+      return res.status(500).json({
+        error: 'Erro interno do servidor'
+      })
+
+    
+  }
 }
 
 export const deletarAluno = async (req: Request, res: Response) => {
-  const paramResult = alunoNumeroParamSchema.parse(req.params)
-
-  const numero = paramResult.numero
-
-   // Repetindo código, vou refatorar logo
-  // Verificar unicidade
-    const alunoExistente = await prisma.aluno.findUnique({
-      where: { numero: numero }
-    })
- 
-    if (!alunoExistente) {
-        return res.status(404).json({ error: "Aluno não encontrado" });
-      }
-
-    await prisma.aluno.delete({
-      where: { numero },
-    });
-
+  try{
+    const paramResult = alunoNumeroParamSchema.parse(req.params)
+  
+    const numero = paramResult.numero
+  
+    await deletarAlunoService(numero)
+  
     return res.status(204).send();
 
-}
+  } catch (err: any) {
+    if (err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({ error: "Aluno não encontrado" });
+    
+    console.error('Erro ao deletar aluno: ', err);
+    return res.status(500).json({ error: "Erro interno do servidor" });
+  }
+  }
  
