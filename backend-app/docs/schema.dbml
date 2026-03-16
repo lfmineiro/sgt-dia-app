@@ -1,0 +1,104 @@
+//// ------------------------------------------------------
+//// THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+//// ------------------------------------------------------
+
+Table alunos {
+  numero Int [pk]
+  nomeGuerra String [not null]
+  nomeCompleto String [not null]
+  anoFormatura Int [not null]
+  curso String
+  membrosGuarnicao membros_guarnicao [not null]
+}
+
+Table servicos {
+  id String [pk]
+  data DateTime [unique, not null]
+  status StatusServico [not null, default: 'EM_ANDAMENTO']
+  membrosGuarnicao membros_guarnicao [not null]
+  speds speds [not null]
+  alteracoes alteracoes [not null]
+}
+
+Table membros_guarnicao {
+  id String [pk]
+  servicoId String [not null]
+  alunoNumero Int [not null]
+  funcao FuncaoMembroGuarnicao [not null]
+  servico servicos [not null]
+  aluno alunos [not null]
+  escalas escalas [not null]
+}
+
+Table escalas {
+  id String [pk]
+  membroGuarnicaoId String [not null]
+  posto String [not null]
+  turno Int [not null]
+  membroGuarnicao membros_guarnicao [not null]
+}
+
+Table speds {
+  id String [pk]
+  servicoId String [not null]
+  companhia String [not null]
+  recebimento String [not null]
+  armamento String
+  punidos String [not null, default: 'S/A']
+  materialCarga String [not null, default: 'S/A']
+  visitaMedica String [not null, default: 'S/A']
+  alunosDispensa String [not null, default: 'S/A']
+  refeicoes String [not null, default: 'S/A']
+  ronda String [not null, default: 'S/A']
+  revistaRecolher String [not null, default: 'S/A']
+  ocorrencias String [not null, default: 'S/A']
+  passagem String [not null]
+  servico servicos [not null]
+}
+
+Table alteracoes {
+  id String [pk]
+  servicoId String [not null]
+  local String [not null]
+  descricao String [not null]
+  fotoUrl String
+  status StatusAlteracao [not null, default: 'NOVA']
+  criadoEm DateTime [default: `now()`, not null]
+  servico servicos [not null]
+}
+
+Table avisos {
+  id String [pk]
+  titulo String [not null]
+  descricao String [not null]
+  ativo Boolean [not null, default: true]
+  criadoEm DateTime [default: `now()`, not null]
+}
+
+Enum StatusServico {
+  EM_ANDAMENTO
+  FECHADO
+}
+
+Enum FuncaoMembroGuarnicao {
+  SGT_DIA
+  CB_DIA
+  PLANTAO
+  PERMANENCIA
+}
+
+Enum StatusAlteracao {
+  NOVA
+  PENDENTE
+  RESOLVIDA
+}
+
+Ref: membros_guarnicao.servicoId > servicos.id
+
+Ref: membros_guarnicao.alunoNumero > alunos.numero
+
+Ref: escalas.membroGuarnicaoId > membros_guarnicao.id
+
+Ref: speds.servicoId > servicos.id
+
+Ref: alteracoes.servicoId > servicos.id

@@ -11,7 +11,7 @@ enum StatusServico {
   FECHADO
 }
 
-enum FuncaoGuarnicao {
+enum FuncaoMembroGuarnicao {
   SGT_DIA
   CB_DIA
   PLANTAO
@@ -33,7 +33,7 @@ model Aluno {
   curso        String?
   
   // Relacionamentos
-  guarnicoes   Guarnicao[]
+  membrosGuarnicao MembroGuarnicao[]
 
   @@map("alunos")
 }
@@ -44,35 +44,35 @@ model Servico {
   status     StatusServico @default(EM_ANDAMENTO)
   
   // Relacionamentos
-  guarnicoes Guarnicao[]
-  speds      Sped[]
-  alteracoes Alteracao[]
+  membrosGuarnicao MembroGuarnicao[]
+  speds            Sped[]
+  alteracoes       Alteracao[]
 
   @@map("servicos")
 }
 
-model Guarnicao {
-  id          String          @id @default(uuid())
+model MembroGuarnicao {
+  id          String                @id @default(uuid())
   servicoId   String
   alunoNumero Int
-  funcao      FuncaoGuarnicao
+  funcao      FuncaoMembroGuarnicao
 
   // Relacionamentos
-  servico     Servico  @relation(fields: [servicoId], references: [id])
-  aluno       Aluno    @relation(fields: [alunoNumero], references: [numero])
+  servico     Servico            @relation(fields: [servicoId], references: [id])
+  aluno       Aluno              @relation(fields: [alunoNumero], references: [numero])
   escalas     Escala[]
 
-  @@map("guarnicoes")
+  @@map("membros_guarnicao")
 }
 
 model Escala {
-  id          String @id @default(uuid())
-  guarnicaoId String
-  posto       String
-  turno       Int
+  id                String @id @default(uuid())
+  membroGuarnicaoId String
+  posto             String
+  turno             Int
 
   // Relacionamentos
-  guarnicao   Guarnicao @relation(fields: [guarnicaoId], references: [id])
+  membroGuarnicao   MembroGuarnicao @relation(fields: [membroGuarnicaoId], references: [id])
 
   @@map("escalas")
 }

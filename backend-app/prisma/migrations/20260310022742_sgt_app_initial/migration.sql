@@ -2,7 +2,7 @@
 CREATE TYPE "StatusServico" AS ENUM ('EM_ANDAMENTO', 'FECHADO');
 
 -- CreateEnum
-CREATE TYPE "FuncaoGuarnicao" AS ENUM ('SGT_DIA', 'CB_DIA', 'PLANTAO', 'PERMANENCIA');
+CREATE TYPE "FuncaoMembroGuarnicao" AS ENUM ('SGT_DIA', 'CB_DIA', 'PLANTAO', 'PERMANENCIA');
 
 -- CreateEnum
 CREATE TYPE "StatusAlteracao" AS ENUM ('NOVA', 'PENDENTE', 'RESOLVIDA');
@@ -28,19 +28,19 @@ CREATE TABLE "servicos" (
 );
 
 -- CreateTable
-CREATE TABLE "guarnicoes" (
+CREATE TABLE "membros_guarnicao" (
     "id" TEXT NOT NULL,
     "servicoId" TEXT NOT NULL,
     "alunoNumero" INTEGER NOT NULL,
-    "funcao" "FuncaoGuarnicao" NOT NULL,
+    "funcao" "FuncaoMembroGuarnicao" NOT NULL,
 
-    CONSTRAINT "guarnicoes_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "membros_guarnicao_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
 CREATE TABLE "escalas" (
     "id" TEXT NOT NULL,
-    "guarnicaoId" TEXT NOT NULL,
+    "membroGuarnicaoId" TEXT NOT NULL,
     "posto" TEXT NOT NULL,
     "turno" INTEGER NOT NULL,
 
@@ -95,13 +95,13 @@ CREATE TABLE "avisos" (
 CREATE UNIQUE INDEX "servicos_data_key" ON "servicos"("data");
 
 -- AddForeignKey
-ALTER TABLE "guarnicoes" ADD CONSTRAINT "guarnicoes_servicoId_fkey" FOREIGN KEY ("servicoId") REFERENCES "servicos"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "membros_guarnicao" ADD CONSTRAINT "membros_guarnicao_servicoId_fkey" FOREIGN KEY ("servicoId") REFERENCES "servicos"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "guarnicoes" ADD CONSTRAINT "guarnicoes_alunoNumero_fkey" FOREIGN KEY ("alunoNumero") REFERENCES "alunos"("numero") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "membros_guarnicao" ADD CONSTRAINT "membros_guarnicao_alunoNumero_fkey" FOREIGN KEY ("alunoNumero") REFERENCES "alunos"("numero") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "escalas" ADD CONSTRAINT "escalas_guarnicaoId_fkey" FOREIGN KEY ("guarnicaoId") REFERENCES "guarnicoes"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "escalas" ADD CONSTRAINT "escalas_membroGuarnicaoId_fkey" FOREIGN KEY ("membroGuarnicaoId") REFERENCES "membros_guarnicao"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "speds" ADD CONSTRAINT "speds_servicoId_fkey" FOREIGN KEY ("servicoId") REFERENCES "servicos"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
