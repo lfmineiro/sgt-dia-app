@@ -19,5 +19,5 @@ COPY . .
 # Expose port
 EXPOSE 3000
 
-# Start command (adjust based on your actual start script)
-CMD ["npm", "start"]
+# Start command in development mode with file watching
+CMD ["npm", "run", "dev"]

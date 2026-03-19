@@ -16,7 +16,7 @@ services:
       context: ./backend-app
       dockerfile: Dockerfile
     container_name: sgt_dia_backend
-    command: sh -c "npm install && npx prisma generate && npm start"
+    command: sh -c "npm install && npx prisma generate && npm run dev"
     environment:
       - DATABASE_URL=postgresql://admin:adminpassword@db:5432/sped_db
       - NODE_ENV=development
@@ -33,6 +33,7 @@ services:
       context: ./frontend-app
       dockerfile: Dockerfile
     container_name: sgt_dia_frontend
+    command: sh -c "npm install && npm run dev"
     ports:
       - "5173:5173"
     volumes:
