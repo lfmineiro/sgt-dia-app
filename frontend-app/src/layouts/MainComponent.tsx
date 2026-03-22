@@ -3,11 +3,8 @@ import { Sidebar } from '../components/layout/Sidebar';
 import { Header } from '../components/layout/Header';
 import { Outlet } from 'react-router-dom';
 
-interface MainLayoutProps {
-  children: React.ReactNode;
-}
 
-export const MainLayout: React.FC<MainLayoutProps> = () => {
+export const MainLayout: React.FC = () => {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
