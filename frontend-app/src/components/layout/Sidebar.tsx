@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutGrid, FileSearch2, CalendarDays, FileSignature, ShieldCheck, LogOut } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 // Tipagem simples para os itens de menu
 interface NavItemProps {
@@ -28,6 +28,8 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, active, to }) => (
 );
 
 export const Sidebar = () => {
+  const location = useLocation()
+
   return (
     <aside className="flex h-screen w-64 flex-col bg-slate-950 p-6 text-white fixed left-0 top-0 z-40">
       {/* 1. Logo/Nome do Sistema (Topo) */}
@@ -41,12 +43,12 @@ export const Sidebar = () => {
         </div>
       </div>
 
-      {/* 2. Navegação Principal (Meio) */}
+      {/* 2. Navegação Principal */}
       <nav className="flex flex-col gap-3">
-        <NavItem to='/dashboard' icon={<LayoutGrid className="h-6 w-6" />} label="Dashboard" active />
-        <NavItem to='alteracoes' icon={<FileSearch2 className="h-6 w-6" />} label="Alterações" />
-        <NavItem to='escala' icon={<CalendarDays className="h-6 w-6" />} label="Escala" />
-        <NavItem to='sped' icon={<FileSignature className="h-6 w-6" />} label="SPED" />
+        <NavItem to='/dashboard' icon={<LayoutGrid className="h-6 w-6" />} label="Dashboard" active={location.pathname === '/dashboard'} />
+        <NavItem to='/alteracoes' icon={<FileSearch2 className="h-6 w-6" />} label="Alterações" active={location.pathname === '/alteracoes'}/>
+        <NavItem to='/escala' icon={<CalendarDays className="h-6 w-6" />} label="Escala" active={location.pathname === '/escala'}/>
+        <NavItem to='/sped' icon={<FileSignature className="h-6 w-6" />} label="SPED" active={location.pathname === '/sped'}/>
       </nav>
 
       <div className="mt-auto border-t border-slate-800 pt-6">
