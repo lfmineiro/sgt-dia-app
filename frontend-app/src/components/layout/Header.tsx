@@ -16,6 +16,12 @@ export const Header = () => {
     return sgtDia ? (5 - sgtDia.anoFormatura + anoAtual)  : 0
   }
 
+  const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric'
+}).format(new Date());
+
   // ano atual -> 26 anoFormatura - > 27 - > turma 4º ano 
 
   return (
@@ -31,7 +37,7 @@ export const Header = () => {
               }
           </h1>
           <p className="mt-1 text-xl text-slate-600">
-            {anoAtual}
+            {dataFormatada}
           </p>
         </div>
         
