@@ -1,8 +1,12 @@
 import { Eye, Lock, LogIn, User } from 'lucide-react'
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+
+  const navigate = useNavigate()
+
   return (
     <div className="flex items-center justify-center bg-slate-100 h-screen">
       <div className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-12 shadow-2xl">
@@ -49,6 +53,7 @@ const LoginPage = () => {
             size='lg'
             className='w-full'
             rightIcon={<LogIn className='h-6 w-6' />}
+            onClick={() => navigate('/dashboard')}
           >
             Entrar
           </Button>
