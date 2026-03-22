@@ -64,25 +64,27 @@ export const Dashboard = () => {
 
         {/* Estatísticas */}
         <section className="bg-white p-8 rounded-3xl border border-slate-100 shadow-lg">
-          <h3 className="text-2xl font-bold text-slate-950 mb-8 border-b border-slate-100 pb-6">Estatísticas do Mês</h3>
+          <h3 className="text-2xl font-bold text-slate-950 mb-8 border-b border-slate-100 pb-6">Estatísticas</h3>
 
           <div className="space-y-6 text-xl">
             <div className="flex items-center justify-between">
-              <p className="font-medium text-slate-700">Alterações Processadas</p>
+              <p className="font-medium text-slate-700">Alterações Totais</p>
               <p className="font-extrabold text-slate-950 text-3xl">156</p>
             </div>
             
-            <div className="w-full bg-slate-100 rounded-full h-3">
+            {/* Essa Progress Bar talvez vire uma componente */}
+            {/* <div className="w-full bg-slate-100 rounded-full h-3">
               <div className="bg-blue-600 h-3 rounded-full" style={{width: '94%'}}></div>
-            </div>
+            </div> */}
 
+              {/* Essas Cards vão virar componentes */}
             <div className="flex items-center justify-between mt-8">
-              <p className="font-medium text-slate-700">Taxa de Resolução</p>
-              <p className="font-extrabold text-slate-950 text-3xl text-emerald-600">94%</p>
+              <p className="font-medium text-slate-700">Alterações 5º Piso</p>
+              <p className="font-extrabold text-slate-950 text-3xl text-emerald-600">94</p>
             </div>
             
             <div className="flex items-center justify-between mt-8">
-              <p className="font-medium text-slate-700">Pendências Totais</p>
+              <p className="font-medium text-slate-700">Alterações 4º Piso</p>
               <p className="font-extrabold text-slate-950 text-3xl text-red-600">12</p>
             </div>
           </div>
