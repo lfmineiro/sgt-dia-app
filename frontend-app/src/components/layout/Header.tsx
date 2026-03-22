@@ -9,14 +9,14 @@ export const Header = () => {
   })
 
   // const nomeSgtDia = "Al 4º Ano Fulano";
-  const dataHoje = new Date().getFullYear();
+  const anoAtual = new Date().getFullYear() % 100;
 
   // calcular a turma do elemento 
-  // const CalcularTurma = () => {
-  //   const dataHoje = new Date()
-  //   console.log(dataHoje)
-  //   return dataHoje
-  // }
+  const CalcularTurma = (): number => {
+    return sgtDia ? (5 - sgtDia.anoFormatura + anoAtual)  : 0
+  }
+
+  // ano atual -> 26 anoFormatura - > 27 - > turma 4º ano 
 
   return (
     <header className="bg-white border-b border-slate-100 p-8 shadow-sm">
@@ -26,13 +26,13 @@ export const Header = () => {
             {isLoading ? 
               <span>Carregando...</span> : 
               <>
-                Sgt Dia: <span className="text-blue-700">Al {sgtDia?.numero} - {sgtDia?.nomeGuerra}</span>
+                Sgt Dia: <span className="text-blue-700">Alu {CalcularTurma()}º Ano {sgtDia?.nomeGuerra}</span>
               </>
               }
           </h1>
           <p className="mt-1 text-xl text-slate-600">
-            {dataHoje}
-          </      p>
+            {anoAtual}
+          </p>
         </div>
         
         {/* Espaço opcional para notificações ou busca, se quiser adicionar depois */}
