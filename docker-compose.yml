@@ -10,13 +10,19 @@ services:
       - "5433:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d sped_db -h localhost -p 5432"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   backend:
     build:
-      context: ./backend-app
+      context: ./backend-app  
       dockerfile: Dockerfile
     container_name: sgt_dia_backend
-    command: sh -c "npm install && npx prisma generate && npm run dev"
+    command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
     environment:
       - DATABASE_URL=postgresql://admin:adminpassword@db:5432/sped_db
       - NODE_ENV=development
@@ -26,14 +32,15 @@ services:
       - ./backend-app:/app
       - backend_node_modules:/app/node_modules
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   frontend:
     build:
       context: ./frontend-app
       dockerfile: Dockerfile
     container_name: sgt_dia_frontend
-    command: sh -c "npm install && npm run dev"
+    command: sh -c "npm run dev"
     ports:
       - "5173:5173"
     volumes:
