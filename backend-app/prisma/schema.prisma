@@ -70,7 +70,7 @@ model Escala {
   membroGuarnicaoId String
   posto             String
   turno             Int
-  quarto            Int?
+  quarto            String?
   cama              String?
 
   // Relacionamentos
