@@ -70,6 +70,10 @@ model Escala {
   membroGuarnicaoId String
   posto             String
   turno             Int
+  horarioInicio     String
+  horarioFim        String
+  quarto            String?
+  cama              String?
 
   // Relacionamentos
   membroGuarnicao   MembroGuarnicao @relation(fields: [membroGuarnicaoId], references: [id])
