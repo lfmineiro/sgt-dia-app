@@ -1,10 +1,7 @@
 import { Check, Clock3, AlertTriangle, PlusCircle } from "lucide-react";
 import { Button } from "../components/ui/Button"; 
-import { useState } from "react";
-import { ModalServico } from "../components/pages/Dashboard/ModalServico";
 
 export const Dashboard = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false)
   return (
     <div className="space-y-10">
       {/*  Quadro de Avisos */}
