@@ -1,3 +1,4 @@
 -- AlterTable
-ALTER TABLE "escalas" ADD COLUMN     "cama" TEXT,
-ADD COLUMN     "quarto" TEXT;
+ALTER TABLE "escalas"
+ADD COLUMN IF NOT EXISTS "cama" TEXT,
+ADD COLUMN IF NOT EXISTS "quarto" TEXT;
