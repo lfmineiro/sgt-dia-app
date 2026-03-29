@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import healthRoutes from './routes/health.routes.js'
 import alunosRoutes from './routes/alunos.routes.js'
 import servicosRoutes from './routes/servicos.routes.js'
+import escalasRoutes from './routes/escalas.routes.js'
 
 // Carregar variáveis de ambiente
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use('/', healthRoutes)
 app.use('/api/alunos', alunosRoutes)
 app.use('/api/servicos', servicosRoutes)
+app.use('/api/escalas', escalasRoutes)
 
 app.get('/', (req, res) => {
   res.send('Hello World! Vendo se Atualiza');
