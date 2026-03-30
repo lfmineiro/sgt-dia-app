@@ -43,7 +43,7 @@ export const ConfigurarPostoModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/35 backdrop-blur-sm p-4">
       <div className="w-full max-w-5xl rounded-3xl border border-slate-200 bg-white shadow-2xl">
         <header className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
           <h3 className="text-2xl font-bold text-slate-900">Configurar Posto</h3>
