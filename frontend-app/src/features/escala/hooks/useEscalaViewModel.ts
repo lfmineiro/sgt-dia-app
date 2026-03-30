@@ -23,6 +23,7 @@ import {
   montarPayloadConfiguracao,
   POSTOS_INICIAIS,
 } from '../utils/escala.helpers';
+import { gerarPdfEscala } from '../utils/escalaPdf';
 
 export const useEscalaViewModel = () => {
   const queryClient = useQueryClient();
@@ -195,6 +196,14 @@ export const useEscalaViewModel = () => {
 
   const linhasEscala = escalasQuery.data ?? [];
 
+  const gerarPdfAtual = () => {
+    gerarPdfEscala({
+      dataExtenso,
+      posto: postoAtivo,
+      linhas: linhasEscala,
+    });
+  };
+
   return {
     dataExtenso,
     postos,
@@ -212,6 +221,7 @@ export const useEscalaViewModel = () => {
     adicionarAlocacao,
     removerAlocacao,
     salvarConfiguracao,
+    gerarPdfAtual,
     isSalvandoConfiguracao: configurarEscalaMutation.isPending,
     linhasEscala,
     isCarregandoEscalas: escalasQuery.isLoading,

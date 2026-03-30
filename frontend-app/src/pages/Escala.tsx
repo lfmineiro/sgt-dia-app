@@ -1,3 +1,4 @@
+import { FileDown } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import {
   ConfigurarPostoModal,
@@ -40,6 +41,18 @@ export const EscalaPage = () => {
             onInlineChange={viewModel.atualizarInline}
             onInlineBlur={viewModel.salvarInlineNoBlur}
           />
+
+          <div className="flex justify-center pt-2">
+            <Button
+              type="button"
+              className="min-w-56"
+              leftIcon={<FileDown className="h-4 w-4" />}
+              onClick={viewModel.gerarPdfAtual}
+              disabled={viewModel.isCarregandoEscalas || viewModel.linhasEscala.length === 0}
+            >
+              Gerar PDF da Escala
+            </Button>
+          </div>
         </div>
       </section>
 
