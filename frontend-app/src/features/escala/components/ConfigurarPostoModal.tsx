@@ -1,9 +1,9 @@
 import { Plus, Search, X } from 'lucide-react';
-import { Button } from '../ui/Button';
-import { Input } from '../ui/Input';
-import type { MembroEscalaOption } from '../../services/escalas.service';
-import type { AlocacaoFormRow } from './types';
-import { gerarIntervaloPorTurno } from './turno.utils';
+import { Button } from '../../../components/ui/Button';
+import { Input } from '../../../components/ui/Input';
+import type { AlocacaoFormRow, MembroEscalaOption } from '../types/escala.types';
+import { labelDoMembro } from '../utils/escala.helpers';
+import { gerarIntervaloPorTurno } from '../utils/turno';
 
 interface ConfigurarPostoModalProps {
   isOpen: boolean;
@@ -20,10 +20,6 @@ interface ConfigurarPostoModalProps {
   onAlocacaoChange: (index: number, campo: keyof AlocacaoFormRow, valor: string) => void;
   filtrarMembros: (termo: string) => MembroEscalaOption[];
 }
-
-const labelDoMembro = (membro: MembroEscalaOption): string => {
-  return `${membro.nr} - ${membro.alunoNomeGuerra}`;
-};
 
 export const ConfigurarPostoModal = ({
   isOpen,

@@ -5,33 +5,24 @@ import {
   buscarMembrosEscalaService,
   configurarPostoEscalaService,
   listarEscalasPorPostoService,
-  type ConfigurarEscalaPayload,
-  type EscalaLinha,
-  type MembroEscalaOption,
 } from '../services/escalas.service';
-import type { AlocacaoFormRow, CampoEditavel, InlineDraft } from '../components/escala/types';
-
-const POSTOS_INICIAIS = ['Ala 5o Piso', '4o Piso', '3o Piso', 'SegFem'];
-
-const criarAlocacoesIniciais = (): AlocacaoFormRow[] => {
-  return Array.from({ length: 3 }, () => ({
-    membroGuarnicaoId: '',
-    militarBusca: '',
-    quarto: '',
-    cama: '',
-  }));
-};
-
-const criarAlocacaoVazia = (): AlocacaoFormRow => ({
-  membroGuarnicaoId: '',
-  militarBusca: '',
-  quarto: '',
-  cama: '',
-});
-
-const labelDoMembro = (membro: MembroEscalaOption): string => {
-  return `${membro.nr} - ${membro.alunoNomeGuerra}`;
-};
+import type {
+  AlocacaoFormRow,
+  CampoEditavel,
+  ConfigurarEscalaPayload,
+  EscalaLinha,
+  InlineDraft,
+  MembroEscalaOption,
+} from '../types/escala.types';
+import {
+  criarAlocacaoVazia,
+  criarAlocacoesIniciais,
+  criarInlineDrafts,
+  filtrarMembrosPorTermo,
+  labelDoMembro,
+  montarPayloadConfiguracao,
+  POSTOS_INICIAIS,
+} from '../utils/escala.helpers';
 
 export const useEscalaViewModel = () => {
   const queryClient = useQueryClient();
@@ -78,31 +69,11 @@ export const useEscalaViewModel = () => {
   }, [membrosQuery.data]);
 
   const filtrarMembros = (termo: string): MembroEscalaOption[] => {
-    const busca = termo.trim().toLowerCase();
-    const membros = membrosQuery.data ?? [];
-    if (!busca) return membros;
-
-    return membros.filter((membro) => {
-      return (
-        String(membro.nr).includes(busca) ||
-        membro.alunoNomeGuerra.toLowerCase().includes(busca) ||
-        membro.alunoNomeCompleto.toLowerCase().includes(busca)
-      );
-    });
+    return filtrarMembrosPorTermo(termo, membrosQuery.data ?? []);
   };
 
   useEffect(() => {
-    const linhas = escalasQuery.data ?? [];
-    const proxDrafts: Record<string, InlineDraft> = {};
-
-    linhas.forEach((linha) => {
-      proxDrafts[linha.id] = {
-        quarto: linha.quarto ?? '',
-        cama: linha.cama ?? '',
-      };
-    });
-
-    setInlineDrafts(proxDrafts);
+    setInlineDrafts(criarInlineDrafts(escalasQuery.data ?? []));
   }, [escalasQuery.data]);
 
   const configurarEscalaMutation = useMutation({
@@ -185,15 +156,7 @@ export const useEscalaViewModel = () => {
       }
     }
 
-    const payload: ConfigurarEscalaPayload = {
-      posto: postoModal.trim(),
-      alocacoes: alocacoes.map((alocacao, index) => ({
-        membroGuarnicaoId: alocacao.membroGuarnicaoId,
-        turno: index + 1,
-        quarto: alocacao.quarto.trim() || null,
-        cama: alocacao.cama.trim() || null,
-      })),
-    };
+    const payload: ConfigurarEscalaPayload = montarPayloadConfiguracao(postoModal, alocacoes);
 
     configurarEscalaMutation.mutate(payload, {
       onError: () => {
@@ -230,6 +193,8 @@ export const useEscalaViewModel = () => {
     atualizarEscalaMutation.mutate({ id: linha.id, payload });
   };
 
+  const linhasEscala = escalasQuery.data ?? [];
+
   return {
     dataExtenso,
     postos,
@@ -248,7 +213,7 @@ export const useEscalaViewModel = () => {
     removerAlocacao,
     salvarConfiguracao,
     isSalvandoConfiguracao: configurarEscalaMutation.isPending,
-    linhasEscala: escalasQuery.data ?? [],
+    linhasEscala,
     isCarregandoEscalas: escalasQuery.isLoading,
     inlineDrafts,
     atualizarInline,

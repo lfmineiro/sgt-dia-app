@@ -1,9 +1,11 @@
 import { Button } from '../components/ui/Button';
-import { PostoTabs } from '../components/PostoTabs';
-import { ConfigurarPostoModal } from '../components/escala/ConfigurarPostoModal';
-import { EscalaHeader } from '../components/escala/EscalaHeader';
-import { EscalaTable } from '../components/escala/EscalaTable';
-import { useEscalaViewModel } from '../hooks/useEscalaViewModel';
+import {
+  ConfigurarPostoModal,
+  EscalaHeader,
+  EscalaTable,
+  PostoTabs,
+  useEscalaViewModel,
+} from '../features/escala';
 
 export const EscalaPage = () => {
   const viewModel = useEscalaViewModel();
