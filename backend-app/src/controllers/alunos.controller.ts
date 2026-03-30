@@ -1,5 +1,4 @@
 import type { Request, Response } from "express";
-import { prisma } from "../lib/prisma.js";
 import { alunoNumeroParamSchema, atualizarAlunoSchema, criarAlunoSchema } from "../schemas/alunos.schemas.js";
 import { atualizarAlunoService, criarAlunoService, deletarAlunoService, listarAlunosService } from "../services/alunos.service.js";
 
@@ -69,6 +68,15 @@ export const deletarAluno = async (req: Request, res: Response) => {
 
   } catch (err: any) {
     if (err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({ error: "Aluno não encontrado" });
+
+    const prismaErrorCode =
+      err && typeof err === "object" && "code" in err ? String(err.code) : null;
+
+    if (prismaErrorCode === "P2003") {
+      return res.status(409).json({
+        error: "Aluno possui vínculo com serviço/guarnição e não pode ser deletado",
+      });
+    }
     
     console.error('Erro ao deletar aluno: ', err);
     return res.status(500).json({ error: "Erro interno do servidor" });
