@@ -31,7 +31,7 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, active, to }) => (
 
 export const Sidebar = () => {
   const location = useLocation()
-  const { data: sgtDia, isLoading } = useQuery({
+  const { data: sgtDia } = useQuery({
     queryKey: ['sgtAtual'],
     queryFn: buscarSargentoDeDia
   })
