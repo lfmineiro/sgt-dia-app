@@ -23,6 +23,20 @@ export const labelDoMembro = (membro: MembroEscalaOption): string => {
   return `${membro.nr} - ${membro.alunoNomeGuerra}`;
 };
 
+export const deduplicarMembrosPorNr = (
+  membros: MembroEscalaOption[],
+): MembroEscalaOption[] => {
+  const membrosPorNr = new Map<number, MembroEscalaOption>();
+
+  membros.forEach((membro) => {
+    if (!membrosPorNr.has(membro.nr)) {
+      membrosPorNr.set(membro.nr, membro);
+    }
+  });
+
+  return [...membrosPorNr.values()];
+};
+
 export const filtrarMembrosPorTermo = (
   termo: string,
   membros: MembroEscalaOption[],

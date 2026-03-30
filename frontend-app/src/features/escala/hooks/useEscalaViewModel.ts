@@ -18,6 +18,7 @@ import {
   criarAlocacaoVazia,
   criarAlocacoesIniciais,
   criarInlineDrafts,
+  deduplicarMembrosPorNr,
   filtrarMembrosPorTermo,
   labelDoMembro,
   montarPayloadConfiguracao,
@@ -61,16 +62,20 @@ export const useEscalaViewModel = () => {
     return [...lista];
   }, [escalasQuery.data, postoModal]);
 
+  const membrosDisponiveis = useMemo(() => {
+    return deduplicarMembrosPorNr(membrosQuery.data ?? []);
+  }, [membrosQuery.data]);
+
   const membrosPorLabel = useMemo(() => {
     const map = new Map<string, MembroEscalaOption>();
-    (membrosQuery.data ?? []).forEach((membro) => {
+    membrosDisponiveis.forEach((membro) => {
       map.set(labelDoMembro(membro), membro);
     });
     return map;
-  }, [membrosQuery.data]);
+  }, [membrosDisponiveis]);
 
   const filtrarMembros = (termo: string): MembroEscalaOption[] => {
-    return filtrarMembrosPorTermo(termo, membrosQuery.data ?? []);
+    return filtrarMembrosPorTermo(termo, membrosDisponiveis);
   };
 
   useEffect(() => {

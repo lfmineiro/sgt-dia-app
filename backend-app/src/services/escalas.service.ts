@@ -72,6 +72,23 @@ const gerarIntervaloPorTurno = (turno: number): string => {
   return `${formatarHoraCheia(horaInicio)}-${formatarHoraCheia(horaFim)}`;
 };
 
+const obterServicoIdParaListagem = async (
+  servicoId?: string,
+): Promise<string | undefined> => {
+  if (servicoId) return servicoId;
+
+  const servicoMaisRecente = await prisma.servico.findFirst({
+    select: {
+      id: true,
+    },
+    orderBy: {
+      data: "desc",
+    },
+  });
+
+  return servicoMaisRecente?.id;
+};
+
 export const configurarEscalaService = async (
   input: ConfigurarEscalaInput,
 ): Promise<EscalaLinhaView[]> => {
@@ -242,8 +259,10 @@ export const atualizarEscalaService = async (
 export const listarMembrosEscalaService = async (
   input: ListarMembrosEscalaQuery,
 ): Promise<MembroEscalaOption[]> => {
+  const servicoId = await obterServicoIdParaListagem(input.servicoId);
+
   const where: Prisma.MembroGuarnicaoWhereInput = {
-    ...(input.servicoId ? { servicoId: input.servicoId } : {}),
+    ...(servicoId ? { servicoId } : {}),
   };
 
   if (input.busca) {
@@ -291,10 +310,18 @@ export const listarMembrosEscalaService = async (
     orderBy: {
       alunoNumero: "asc",
     },
-    take: input.limit,
   });
 
-  return membros.map((membro) => ({
+  const membrosUnicosPorNr = new Map<number, (typeof membros)[number]>();
+  for (const membro of membros) {
+    if (!membrosUnicosPorNr.has(membro.alunoNumero)) {
+      membrosUnicosPorNr.set(membro.alunoNumero, membro);
+    }
+  }
+
+  const membrosUnicos = [...membrosUnicosPorNr.values()].slice(0, input.limit);
+
+  return membrosUnicos.map((membro) => ({
     id: membro.id,
     servicoId: membro.servicoId,
     funcao: membro.funcao,
