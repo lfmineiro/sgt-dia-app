@@ -29,7 +29,7 @@ export const ModalServico = ({ isOpen, onClose }: ModalProps) => {
         type="data"
         value={dataServico}
         onChange={(e) => setDataServico(e.target.value)}
-        className=""
+        className="mt-4 mb-4"
         />
 
         <h3 className="text-lg font-bold text-slate-800 mb-4 mt-4">Guarnição de Alunos</h3>
