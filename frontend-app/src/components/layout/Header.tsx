@@ -2,6 +2,8 @@ import { buscarSargentoDeDia } from "../../services/alunos.service";
 import { useQuery } from '@tanstack/react-query';
 import { Button } from "../ui/Button";
 import { PlusCircle } from "lucide-react";
+import { useState } from "react";
+import { ModalServico } from "../pages/Dashboard/ModalServico";
 
 export const Header = () => {
 //  vamos puxar da API usando o react Query 
@@ -25,6 +27,7 @@ export const Header = () => {
 }).format(new Date());
 
   // ano atual -> 26 anoFormatura - > 27 - > turma 4º ano 
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
     <header className="bg-white border-b border-slate-100 p-8 shadow-sm">
@@ -36,7 +39,7 @@ export const Header = () => {
             </h1> : 
               <div className="flex items-center justify-between">
                 <h1 className="text-3xl font-extrabold text-slate-950">Sgt Dia: <span className="text-blue-700">Alu {CalcularTurma()}º Ano {sgtDia?.nomeGuerra}</span></h1>
-                <Button variant="outline" size="md" leftIcon={<PlusCircle className="h-5 w-5" />}>Criar novo Serviço</Button>
+                <Button variant="outline" size="md" leftIcon={<PlusCircle className="h-5 w-5" />} onClick={() => setIsModalOpen(true)}>Criar novo Serviço</Button>
               </div>
               }
           <p className="mt-1 text-xl text-slate-600">
@@ -46,6 +49,10 @@ export const Header = () => {
         
         {/* Espaço opcional para notificações ou busca, se quiser adicionar depois */}
       </div>
+      <ModalServico
+      isOpen={isModalOpen}
+      onClose={() => setIsModalOpen(false)}
+      />
     </header>
   );
 };

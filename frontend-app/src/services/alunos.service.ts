@@ -22,3 +22,8 @@ export const buscarSargentoDeDia = async (): Promise<Aluno | null> => {
     return null;
   }
 };
+
+export const buscarAlunos = async () => {
+  const response = await api.get('/alunos');
+  return response.data;
+};

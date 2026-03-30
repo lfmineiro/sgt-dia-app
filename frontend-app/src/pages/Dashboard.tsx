@@ -9,7 +9,7 @@ export const Dashboard = () => {
         {/* Header do bloco */}
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-slate-100">
           <h2 className="text-2xl font-bold text-slate-950">Quadro de Avisos e Rotinas</h2>
-          <Button variant="outline" size="md" leftIcon={<PlusCircle className="h-5 w-5" />}>
+          <Button variant="outline" size="md" leftIcon={<PlusCircle className="h-5 w-5" />} >
             Adicionar Aviso
           </Button>
         </div>
