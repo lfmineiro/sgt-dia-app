@@ -11,6 +11,13 @@ enum StatusServico {
   FECHADO
 }
 
+enum SetorLocal {
+  ALA_5_PISO
+  ALA_4_PISO
+  ALA_3_PISO
+  SEG_FEM
+}
+
 enum FuncaoMembroGuarnicao {
   SGT_DIA
   CB_DIA
@@ -104,7 +111,8 @@ model Sped {
 model Alteracao {
   id        String          @id @default(uuid())
   servicoId String
-  local     String
+  local     SetorLocal
+  comodo    String
   descricao String
   fotoUrl   String?
   status    StatusAlteracao @default(NOVA)

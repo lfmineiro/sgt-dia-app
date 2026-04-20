@@ -5,7 +5,7 @@ export interface Alteracao {
   descricao: string,
   local: string,
   fotoUrl: string,
-
+  comodo: string,
 }
 
 
