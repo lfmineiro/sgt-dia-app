@@ -2,12 +2,20 @@ import { useState } from "react";
 import { Tabs } from "../components/ui/Tabs";
 import { useQuery } from "@tanstack/react-query";
 import { fetchAlteracoes } from "../services/alteracao.service";
+import {
+  ABAS_ALTERACOES,
+  getSetorByAba,
+  LABEL_SETOR,
+  MAPEAMENTO_QUARTOS,
+  ORDEM_SETORES,
+  type Setor,
+} from "../constants/locais";
+import { ToggleQuarto } from "../components/pages/Alteracoes/toggleQuarto";
 
-
-const abas = ['Ala 5º Piso', '4º Piso', '3º Piso', 'SegFem'];
+const abas = ABAS_ALTERACOES;
 
 export const AlteracoesPage = () => {
-  const [abaAtiva, setAbaAtiva] = useState(abas[0]);
+  const [setorAtivo, setSetorAtivo] = useState<Setor>(ORDEM_SETORES[0]);
   
   const { data: alteracoes, isLoading, isError } = useQuery({
     queryKey: ['alteracoesAtuais'],
@@ -15,6 +23,11 @@ export const AlteracoesPage = () => {
   })
 
   const listaAlteracoes = alteracoes ?? [];
+  const abaAtiva = LABEL_SETOR[setorAtivo];
+  const comodosSetorAtivo = MAPEAMENTO_QUARTOS[setorAtivo];
+  const alteracoesSetorAtivo = listaAlteracoes.filter(
+    (alteracao) => alteracao.local === setorAtivo
+  );
 
   return (
     <div className="space y-10">
@@ -22,7 +35,7 @@ export const AlteracoesPage = () => {
       <Tabs 
       options={abas}
       activeTab={abaAtiva}
-      onChange={setAbaAtiva}/>
+      onChange={(novaAba) => setSetorAtivo(getSetorByAba(novaAba))}/>
 
       {/* Lista de Quartos -> Vou transformar em Component */}
       {/* Além disso, tenho que associar a lista de quartos com a primeira aba pode ser com uma condicional talvez */}
@@ -35,17 +48,14 @@ export const AlteracoesPage = () => {
           <p>Nenhuma alteração encontrada.</p>
         )}
 
-        {!isLoading && !isError && listaAlteracoes.length > 0 && (
+        {!isLoading && !isError && (
           <>
-            <p>Total de alterações: {listaAlteracoes.length}</p>
+            <p>Total de alterações no setor: {alteracoesSetorAtivo.length}</p>
 
-            {listaAlteracoes.map((a) => (
-              <div key={a.id} className="rounded border p-3">
-                <p><strong>Local:</strong> {a.local}</p>
-                <p><strong>Descrição:</strong> {a.descricao}</p>
-                {a.fotoUrl && <p><strong>Foto:</strong> {a.fotoUrl}</p>}
-              </div>
-            ))}
+            <ToggleQuarto
+              comodos={comodosSetorAtivo}
+              alteracoes={alteracoesSetorAtivo}
+            />
           </>
         )}
       </div>
