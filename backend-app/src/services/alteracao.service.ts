@@ -7,11 +7,18 @@ export const criarAlteracao = async (data: CriarAlteracaoInput): Promise<Alterac
   const servicoAtual = await prisma.servico.findFirst({
     where: {
       status: 'EM_ANDAMENTO'
-    }
+    },
+    select: { id: true }
   })
 
+    if(!servicoAtual) {
+      throw new Error("SERVICO_NAO_ENCONTRADO")
+  }
   const alteracaoNova = await prisma.alteracao.create({
-    data: data
+    data: {
+      ...data,
+      servicoId: servicoAtual.id,
+      } 
   })
 
   return alteracaoNova
