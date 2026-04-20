@@ -13,7 +13,7 @@ export interface EscalaLinha {
 }
 
 export interface ConfigurarEscalaAlocacao {
-  membroGuarnicaoId: string;
+  membroGuarnicaoId?: string;
   turno?: number;
   quarto?: string | null;
   cama?: string | null;
@@ -21,6 +21,8 @@ export interface ConfigurarEscalaAlocacao {
 
 export interface ConfigurarEscalaPayload {
   posto: string;
+  inicioPrimeiroHorario?: string;
+  fimTerceiroHorario?: string;
   alocacoes: ConfigurarEscalaAlocacao[];
 }
 

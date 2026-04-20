@@ -15,7 +15,6 @@ import type {
   MembroEscalaOption,
 } from '../types/escala.types';
 import {
-  criarAlocacaoVazia,
   criarAlocacoesIniciais,
   criarInlineDrafts,
   deduplicarMembrosPorNr,
@@ -25,6 +24,11 @@ import {
   POSTOS_INICIAIS,
 } from '../utils/escala.helpers';
 import { gerarPdfEscala } from '../utils/escalaPdf';
+import {
+  FIM_TERCEIRO_HORARIO_PADRAO,
+  INICIO_PRIMEIRO_HORARIO_PADRAO,
+  janelaHorariosValida,
+} from '../utils/turno';
 
 export const useEscalaViewModel = () => {
   const queryClient = useQueryClient();
@@ -33,6 +37,12 @@ export const useEscalaViewModel = () => {
   const [postoModal, setPostoModal] = useState<string>(POSTOS_INICIAIS[0]);
   const [erroModal, setErroModal] = useState<string | null>(null);
   const [alocacoes, setAlocacoes] = useState<AlocacaoFormRow[]>(criarAlocacoesIniciais);
+  const [inicioPrimeiroHorario, setInicioPrimeiroHorario] = useState<string>(
+    INICIO_PRIMEIRO_HORARIO_PADRAO,
+  );
+  const [fimTerceiroHorario, setFimTerceiroHorario] = useState<string>(
+    FIM_TERCEIRO_HORARIO_PADRAO,
+  );
   const [inlineDrafts, setInlineDrafts] = useState<Record<string, InlineDraft>>({});
 
   const dataExtenso = useMemo(() => {
@@ -107,6 +117,8 @@ export const useEscalaViewModel = () => {
     setPostoModal(postoAtivo);
     setErroModal(null);
     setAlocacoes(criarAlocacoesIniciais());
+    setInicioPrimeiroHorario(INICIO_PRIMEIRO_HORARIO_PADRAO);
+    setFimTerceiroHorario(FIM_TERCEIRO_HORARIO_PADRAO);
     setModalAberto(true);
   };
 
@@ -134,14 +146,6 @@ export const useEscalaViewModel = () => {
     });
   };
 
-  const adicionarAlocacao = () => {
-    setAlocacoes((atual) => [...atual, criarAlocacaoVazia()]);
-  };
-
-  const removerAlocacao = (index: number) => {
-    setAlocacoes((atual) => atual.filter((_item, idx) => idx !== index));
-  };
-
   const salvarConfiguracao = () => {
     if (!postoModal.trim()) {
       setErroModal('Selecione um posto antes de salvar.');
@@ -153,16 +157,47 @@ export const useEscalaViewModel = () => {
       return;
     }
 
-    for (let i = 0; i < alocacoes.length; i += 1) {
-      const alocacao = alocacoes[i];
+    const alocacoesComTurno = alocacoes.map((alocacao, index) => ({
+      ...alocacao,
+      turno: index + 1,
+    }));
 
-      if (!alocacao.membroGuarnicaoId) {
-        setErroModal(`Selecione um militar valido na linha ${i + 1}.`);
+    const alocacoesHorarios = alocacoesComTurno.filter((alocacao) => alocacao.turno <= 3);
+    const alocacaoPermanencia = alocacoesComTurno.find((alocacao) => alocacao.turno === 4);
+
+    const horariosPreenchidos = alocacoesHorarios.filter((alocacao) =>
+      Boolean(alocacao.membroGuarnicaoId),
+    );
+    const algumHorarioPreenchido = horariosPreenchidos.length > 0;
+
+    if (algumHorarioPreenchido && horariosPreenchidos.length !== alocacoesHorarios.length) {
+      setErroModal('Ao preencher horários, informe 1°, 2° e 3° Horário.');
+      return;
+    }
+
+    if (algumHorarioPreenchido) {
+      if (!inicioPrimeiroHorario || !fimTerceiroHorario) {
+        setErroModal('Informe início do 1° horário e fim do 3° horário.');
+        return;
+      }
+
+      if (!janelaHorariosValida(inicioPrimeiroHorario, fimTerceiroHorario)) {
+        setErroModal('A janela deve fechar ciclos completos de 6h (múltiplos de 6h).');
         return;
       }
     }
 
-    const payload: ConfigurarEscalaPayload = montarPayloadConfiguracao(postoModal, alocacoes);
+    if (!algumHorarioPreenchido && !alocacaoPermanencia?.membroGuarnicaoId) {
+      setErroModal('Permanência é obrigatória quando nenhum horário for preenchido.');
+      return;
+    }
+
+    const payload: ConfigurarEscalaPayload = montarPayloadConfiguracao(
+      postoModal,
+      alocacoes,
+      algumHorarioPreenchido ? inicioPrimeiroHorario : undefined,
+      algumHorarioPreenchido ? fimTerceiroHorario : undefined,
+    );
 
     configurarEscalaMutation.mutate(payload, {
       onError: () => {
@@ -219,12 +254,14 @@ export const useEscalaViewModel = () => {
     fecharModalConfiguracao,
     postoModal,
     setPostoModal,
+    inicioPrimeiroHorario,
+    setInicioPrimeiroHorario,
+    fimTerceiroHorario,
+    setFimTerceiroHorario,
     erroModal,
     alocacoes,
     filtrarMembros,
     atualizarAlocacao,
-    adicionarAlocacao,
-    removerAlocacao,
     salvarConfiguracao,
     gerarPdfAtual,
     isSalvandoConfiguracao: configurarEscalaMutation.isPending,

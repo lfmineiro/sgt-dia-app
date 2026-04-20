@@ -4,6 +4,7 @@ import {
   atualizarEscalaSchema,
   configurarEscalaSchema,
   escalaIdParamSchema,
+  listarEscalasPorPostoQuerySchema,
   listarMembrosEscalaQuerySchema,
   postoParamSchema,
 } from "../schemas/escalas.schemas.js";
@@ -51,6 +52,36 @@ export const configurarEscalasPorPosto = async (req: Request, res: Response) => 
       });
     }
 
+    if (err instanceof Error && err.message === "HORARIOS_INCOMPLETOS") {
+      return res.status(400).json({
+        error: "Ao preencher horários, informe 1°, 2° e 3° Horário.",
+      });
+    }
+
+    if (err instanceof Error && err.message === "PERMANENCIA_OBRIGATORIA") {
+      return res.status(400).json({
+        error: "Permanência é obrigatória quando nenhum horário for preenchido.",
+      });
+    }
+
+    if (err instanceof Error && err.message === "HORARIOS_DEFINICAO_OBRIGATORIA") {
+      return res.status(400).json({
+        error: "Informe início do 1° horário e fim do 3° horário.",
+      });
+    }
+
+    if (err instanceof Error && err.message === "INTERVALO_HORARIOS_INVALIDO") {
+      return res.status(400).json({
+        error: "A janela deve fechar ciclos completos de 6h (3 horários de 2h).",
+      });
+    }
+
+    if (err instanceof Error && err.message === "NENHUMA_ALOCACAO_SELECIONADA") {
+      return res.status(400).json({
+        error: "Selecione ao menos um militar para configurar o posto.",
+      });
+    }
+
     console.error("Erro ao configurar escala do posto: ", err);
     return res.status(500).json({
       error: "Erro interno do servidor ao configurar o posto",
@@ -61,7 +92,11 @@ export const configurarEscalasPorPosto = async (req: Request, res: Response) => 
 export const listarEscalasPorPosto = async (req: Request, res: Response) => {
   try {
     const paramsValidados = postoParamSchema.parse(req.params);
-    const escalas = await listarEscalasPorPostoService(paramsValidados.posto);
+    const queryValidada = listarEscalasPorPostoQuerySchema.parse(req.query);
+    const escalas = await listarEscalasPorPostoService(
+      paramsValidados.posto,
+      queryValidada.servicoId,
+    );
     return res.status(200).json(escalas);
   } catch (err: unknown) {
     const zodResponse = handleZodError(res, err);

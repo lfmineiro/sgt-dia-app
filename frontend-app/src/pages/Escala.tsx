@@ -61,13 +61,15 @@ export const EscalaPage = () => {
         postos={viewModel.postos}
         postoSelecionado={viewModel.postoModal}
         onPostoChange={viewModel.setPostoModal}
+        inicioPrimeiroHorario={viewModel.inicioPrimeiroHorario}
+        fimTerceiroHorario={viewModel.fimTerceiroHorario}
+        onInicioPrimeiroHorarioChange={viewModel.setInicioPrimeiroHorario}
+        onFimTerceiroHorarioChange={viewModel.setFimTerceiroHorario}
         alocacoes={viewModel.alocacoes}
         erro={viewModel.erroModal}
         isSaving={viewModel.isSalvandoConfiguracao}
         onClose={viewModel.fecharModalConfiguracao}
         onSave={viewModel.salvarConfiguracao}
-        onAddTurno={viewModel.adicionarAlocacao}
-        onRemoveTurno={viewModel.removerAlocacao}
         onAlocacaoChange={viewModel.atualizarAlocacao}
         filtrarMembros={viewModel.filtrarMembros}
       />

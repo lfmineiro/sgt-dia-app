@@ -22,20 +22,43 @@ const textoOpcionalSchema = z
     return value.length === 0 ? null : value;
   });
 
+const horarioRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+const horarioOpcionalSchema = z
+  .string()
+  .trim()
+  .nullish()
+  .transform((value) => {
+    if (value === undefined || value === null) return undefined;
+    return value.length === 0 ? undefined : value;
+  })
+  .refine((value) => value === undefined || horarioRegex.test(value), {
+    message: "Formato de horário inválido. Use HH:MM",
+  });
+
+const membroGuarnicaoOpcionalSchema = z.preprocess(
+  (value) => {
+    if (typeof value !== "string") return value;
+    const valor = value.trim();
+    return valor.length === 0 ? undefined : valor;
+  },
+  z.string().uuid("ID do membro da guarnição inválido").optional(),
+);
+
 export const configurarEscalaSchema = z.object({
   posto: z.string().trim().min(1, "Informe o posto"),
+  inicioPrimeiroHorario: horarioOpcionalSchema,
+  fimTerceiroHorario: horarioOpcionalSchema,
   alocacoes: z
     .array(
       z.object({
-        membroGuarnicaoId: z
-          .string()
-          .uuid("ID do membro da guarnição inválido"),
-        turno: z.coerce.number().int().positive().optional(),
+        membroGuarnicaoId: membroGuarnicaoOpcionalSchema,
+        turno: z.coerce.number().int().min(1).max(4).optional(),
         quarto: textoOpcionalSchema,
         cama: textoOpcionalSchema,
       }),
     )
-    .min(1, "Informe ao menos uma alocação"),
+    .length(4, "Informe 1°, 2°, 3° Horário e Permanência"),
 });
 
 export type ConfigurarEscalaInput = z.infer<typeof configurarEscalaSchema>;
@@ -63,6 +86,14 @@ export const escalaIdParamSchema = z.object({
 export const postoParamSchema = z.object({
   posto: z.string().trim().min(1, "Informe o posto"),
 });
+
+export const listarEscalasPorPostoQuerySchema = z.object({
+  servicoId: z.string().uuid("ID do serviço inválido").optional(),
+});
+
+export type ListarEscalasPorPostoQuery = z.infer<
+  typeof listarEscalasPorPostoQuerySchema
+>;
 
 export const listarMembrosEscalaQuerySchema = z.object({
   busca: z.string().trim().max(80).optional(),
