@@ -28,7 +28,9 @@ export const listarAlteracoesAtuais = async (): Promise<Alteracao[]> => {
 
   const alteracoes = await prisma.alteracao.findMany({
     where: {
-      status: 'PENDENTE',
+      status: {
+        in: ['PENDENTE', 'NOVA' ]
+      },
     }
   })
 
