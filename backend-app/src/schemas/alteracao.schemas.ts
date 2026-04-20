@@ -9,5 +9,15 @@ export const criarAlteracaoSchema = z.object({
 
 export type CriarAlteracaoInput = z.infer<typeof criarAlteracaoSchema>;
 
+export const alteracaoIdParamSchema = z.object({
+  id: z.string().uuid("ID da alteração inválido"),
+});
+
+export const atualizarStatusAlteracaoSchema = z.object({
+  status: z.enum(["NOVA", "PENDENTE", "RESOLVIDA"]),
+});
+
+export type AtualizarStatusAlteracaoInput = z.infer<typeof atualizarStatusAlteracaoSchema>;
+
 
 
