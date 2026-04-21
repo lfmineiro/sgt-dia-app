@@ -10,6 +10,7 @@ import {
 	criarAlteracao,
 	listarAlteracoesAtuais,
 } from "../services/alteracao.service.js";
+import { uploadAlteracaoImage } from "../lib/cloudinary.js";
 
 const handleZodError = (res: Response, err: unknown) => {
 	if (err instanceof ZodError) {
@@ -79,6 +80,28 @@ export const atualizarStatusDaAlteracao = async (req: Request, res: Response) =>
 		console.error("Erro ao atualizar status da alteração: ", err);
 		return res.status(500).json({
 			error: "Erro interno do servidor ao atualizar status",
+		});
+	}
+};
+
+export const uploadFotoAlteracao = async (req: Request, res: Response) => {
+	try {
+		if (!req.file) {
+			return res.status(400).json({
+				error: "Arquivo de foto é obrigatório",
+			});
+		}
+
+		const { fotoUrl, publicId } = await uploadAlteracaoImage(
+			req.file.buffer,
+			req.file.mimetype,
+		);
+
+		return res.status(201).json({ fotoUrl, publicId });
+	} catch (err: unknown) {
+		console.error("Erro ao fazer upload da foto da alteração: ", err);
+		return res.status(500).json({
+			error: "Erro interno do servidor ao fazer upload da foto",
 		});
 	}
 };
