@@ -77,8 +77,7 @@ export const ToggleQuarto = ({ comodos, alteracoes }: ToggleQuartoProps) => {
 
                 {alteracoesComodo.map((alteracao) => (
                   <div key={alteracao.id} className="flex gap-6">
-                    {/* Placeholder da Imagem (Puxaremos do Cloudinary depois) */}
-                    <div className="w-24 h-24 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-sm font-medium shrink-0 overflow-hidden">
+                    <div className="w-40 h-40 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-sm font-medium shrink-0 overflow-hidden">
                       {alteracao.fotoUrl ? (
                         <img
                           src={alteracao.fotoUrl}

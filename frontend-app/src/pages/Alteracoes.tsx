@@ -37,8 +37,6 @@ export const AlteracoesPage = () => {
       activeTab={abaAtiva}
       onChange={(novaAba) => setSetorAtivo(getSetorByAba(novaAba))}/>
 
-      {/* Lista de Quartos -> Vou transformar em Component */}
-      {/* Além disso, tenho que associar a lista de quartos com a primeira aba pode ser com uma condicional talvez */}
       <div className="space-y-4">
         {isLoading && <p>Carregando alterações...</p>}
 
