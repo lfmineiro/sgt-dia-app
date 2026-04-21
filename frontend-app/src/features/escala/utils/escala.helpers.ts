@@ -5,11 +5,12 @@ import type {
   InlineDraft,
   MembroEscalaOption,
 } from '../types/escala.types';
+import { TOTAL_TURNOS_ESCALA } from './turno';
 
 export const POSTOS_INICIAIS = ['Ala 5o Piso', '4o Piso', '3o Piso', 'SegFem'];
 
 export const criarAlocacoesIniciais = (): AlocacaoFormRow[] => {
-  return Array.from({ length: 3 }, () => criarAlocacaoVazia());
+  return Array.from({ length: TOTAL_TURNOS_ESCALA }, () => criarAlocacaoVazia());
 };
 
 export const criarAlocacaoVazia = (): AlocacaoFormRow => ({
@@ -66,11 +67,15 @@ export const criarInlineDrafts = (linhas: EscalaLinha[]): Record<string, InlineD
 export const montarPayloadConfiguracao = (
   posto: string,
   alocacoes: AlocacaoFormRow[],
+  inicioPrimeiroHorario?: string,
+  fimTerceiroHorario?: string,
 ): ConfigurarEscalaPayload => {
   return {
     posto: posto.trim(),
+    inicioPrimeiroHorario: inicioPrimeiroHorario?.trim() || undefined,
+    fimTerceiroHorario: fimTerceiroHorario?.trim() || undefined,
     alocacoes: alocacoes.map((alocacao, index) => ({
-      membroGuarnicaoId: alocacao.membroGuarnicaoId,
+      membroGuarnicaoId: alocacao.membroGuarnicaoId.trim() || undefined,
       turno: index + 1,
       quarto: alocacao.quarto.trim() || null,
       cama: alocacao.cama.trim() || null,

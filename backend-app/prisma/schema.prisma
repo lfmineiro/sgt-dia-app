@@ -77,6 +77,8 @@ model Escala {
   membroGuarnicaoId String
   posto             String
   turno             Int
+  inicioPrimeiroHorario String?
+  fimTerceiroHorario    String?
   quarto            String?
   cama              String?
 
