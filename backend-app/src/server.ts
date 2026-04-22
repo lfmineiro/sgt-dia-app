@@ -1,9 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
-
-// Carregar variáveis de ambiente antes de importar rotas que dependem delas
-dotenv.config();
+import 'dotenv/config';
 
 import healthRoutes from './routes/health.routes.js'
 import alunosRoutes from './routes/alunos.routes.js'

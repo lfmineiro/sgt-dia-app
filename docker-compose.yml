@@ -23,13 +23,11 @@ services:
       dockerfile: Dockerfile
     container_name: sgt_dia_backend
     command: sh -c "npx prisma generate && npx prisma migrate deploy && npm run dev"
+    env_file:
+      - ./backend-app/.env
     environment:
       - DATABASE_URL=postgresql://admin:adminpassword@db:5432/sped_db
       - NODE_ENV=development
-      - CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
-      - CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
-      - CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
-      - CLOUDINARY_FOLDER=${CLOUDINARY_FOLDER:-sgt-dia/alteracoes}
     ports:
       - "3000:3000"
     volumes:
