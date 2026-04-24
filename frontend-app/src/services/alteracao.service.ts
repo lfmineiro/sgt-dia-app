@@ -8,6 +8,13 @@ export interface Alteracao {
   comodo: string,
 }
 
+export interface CriarAlteracaoInput {
+  descricao: string
+  local: string
+  comodo: string
+  fotoUrl: string | null
+}
+
 
 export const fetchAlteracoes = async (): Promise<Alteracao[] | null> => {
   try {
@@ -45,6 +52,23 @@ export const uploadFotoAlteracao = async (
     return null
   } catch (error) {
     console.error("Erro ao fazer upload da foto da alteração: ", error)
+    return null
+  }
+}
+
+export const criarAlteracao = async (
+  payload: CriarAlteracaoInput,
+): Promise<Alteracao | null> => {
+  try {
+    const response = await api.post('/alteracoes', payload)
+
+    if (response.data) {
+      return response.data
+    }
+
+    return null
+  } catch (error) {
+    console.error("Erro ao criar alteração: ", error)
     return null
   }
 }
