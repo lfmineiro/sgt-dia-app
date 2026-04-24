@@ -40,12 +40,12 @@ export const MAPEAMENTO_QUARTOS: Record<Setor, Comodo[]> = {
   
   ALA_4_PISO: [
     { id: 'Q_4', label: 'Quartos' },
-    { id: 'WC_4', label: 'Banheiro Leste' },
+    { id: 'WC_4', label: 'Banheiro ' },
   ],
 
   ALA_3_PISO: [
     { id: 'Q_3', label: 'Quartos' },
-    { id: 'WC_3', label: 'Banheiro Leste' },
+    { id: 'WC_3', label: 'Banheiro' },
   ],
 
   SEG_FEM: [
