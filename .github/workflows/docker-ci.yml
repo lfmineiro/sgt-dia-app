@@ -1,0 +1,29 @@
+name: Docker CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  docker-build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      # Como o Docker Compose precisa ler o .env do backend, vamos criar um arquivo de teste
+      - name: Criar .env fake para o Build do Docker
+        run: |
+          mkdir -p backend-app
+          echo "DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy_db?schema=public" > backend-app/.env
+          echo "CLOUDINARY_CLOUD_NAME=dummy" >> backend-app/.env
+          echo "CLOUDINARY_API_KEY=dummy" >> backend-app/.env
+          echo "CLOUDINARY_API_SECRET=dummy" >> backend-app/.env
+          echo "CLOUDINARY_FOLDER=dummy" >> backend-app/.env
+
+      - name: Testar Build do Docker Compose
+        # O argumento --build força a recriação das imagens. 
+        run: docker compose build
