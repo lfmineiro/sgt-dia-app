@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { criarAlteracao, uploadFotoAlteracao } from "../services/alteracao.service"
+import type { Setor } from "../constants/locais"
 
 interface UseModalAlteracaoParams {
   onClose: () => void
-  local: string
+  local: Setor
   comodo: string
   onCreated?: () => void
 }

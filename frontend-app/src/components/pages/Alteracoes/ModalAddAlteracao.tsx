@@ -8,7 +8,7 @@ import { getLabelComodo, LABEL_SETOR, type Setor } from "../../../constants/loca
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
-  local: string
+  local: Setor
   comodo: string
   onCreated?: () => void
 }
@@ -30,7 +30,7 @@ export const ModalAddAlteracao = ({ isOpen, onClose, local, comodo, onCreated }:
           <X size={24} />
         </Button>
 
-        <p className="text-sm text-slate-500">Local: <strong>{LABEL_SETOR[local as Setor]}</strong></p>
+        <p className="text-sm text-slate-500">Local: <strong>{LABEL_SETOR[local]}</strong></p>
         <p className="text-sm text-slate-500 mb-3">Cômodo: <strong>{getLabelComodo(comodo)}</strong></p>
       
         <Input 

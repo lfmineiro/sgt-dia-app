@@ -1,0 +1,46 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    # Variável falsa apenas para o Prisma conseguir ler o schema sem dar erro
+    env:
+      DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy_db?schema=public"
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './backend-app/package-lock.json'
+
+      - name: Instalar Dependências
+        run: |
+          cd backend-app
+          npm ci
+
+      - name: Validar Prisma Schema
+        run: |
+          cd backend-app
+          npx prisma validate
+
+      - name: Gerar Tipagem do Prisma (Essencial para o TSC)
+        run: |
+          cd backend-app
+          npx prisma generate
+
+      - name: Check de Tipagem (TypeScript)
+        run: |
+          cd backend-app
+          npx tsc --noEmit
