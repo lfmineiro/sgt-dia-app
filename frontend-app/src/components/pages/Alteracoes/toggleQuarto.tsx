@@ -2,7 +2,7 @@ import { ChevronDown, ChevronRight, Plus } from "lucide-react";
 import type { Comodo, Setor } from "../../../constants/locais";
 import type { Alteracao } from "../../../services/alteracao.service";
 import { useToggleQuarto } from "../../../hooks/useToggleQuarto";
-import { ModalAddAlteracao } from "./ModalAddAlteração";
+import { ModalAddAlteracao } from "./ModalAddAlteracao";
 
 interface ToggleQuartoProps {
   comodos: Comodo[];
