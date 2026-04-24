@@ -2,9 +2,7 @@ import { Plus, X } from "lucide-react"
 import { Button } from "../../ui/Button"
 import { Input } from "../../ui/Input"
 import { useModalAlteracao } from "../../../hooks/useModalAlteracao"
-import { useToggleQuarto } from "../../../hooks/useToggleQuarto"
-import { useAlteracoesPage } from "../../../hooks/useAlteracoesPage"
-import { getLabelComodo, LABEL_SETOR, MAPEAMENTO_QUARTOS, type Setor } from "../../../constants/locais"
+import { getLabelComodo, LABEL_SETOR, type Setor } from "../../../constants/locais"
 
 // centralizar a interface -> assim como centralizar a componente de modal pra deixar padrão
 interface ModalProps {
