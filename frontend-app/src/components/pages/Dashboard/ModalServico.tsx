@@ -2,7 +2,8 @@ import { Plus, Trash2, X } from "lucide-react"
 import { Button } from "../../ui/Button"
 import { Input } from "../../ui/Input"
 import { useModalServico } from "../../../hooks/useModalServico"
-import type { Aluno } from "@prisma/client"
+import type { Aluno } from "../../../types/aluno.types"
+
 
 interface ModalProps {
   isOpen: boolean
