@@ -1,12 +1,6 @@
+import type { Aluno } from '../types/aluno.types';
 import { api } from './api';
 
-export interface Aluno {
-  numero: number;
-  nomeGuerra: string;
-  nomeCompleto: string;
-  anoFormatura: number
-  curso: string
-}
 
 // Vamos pegar apenas o primeiro aluno da lista para testar
 export const buscarSargentoDeDia = async (): Promise<Aluno | null> => {
