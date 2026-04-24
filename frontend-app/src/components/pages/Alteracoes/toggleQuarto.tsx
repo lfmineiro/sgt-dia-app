@@ -1,23 +1,25 @@
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
-import { useState } from "react";
-import type { Comodo } from "../../../constants/locais";
+import type { Comodo, Setor } from "../../../constants/locais";
 import type { Alteracao } from "../../../services/alteracao.service";
+import { useToggleQuarto } from "../../../hooks/useToggleQuarto";
+import { ModalAddAlteracao } from "./ModalAddAlteração";
 
 interface ToggleQuartoProps {
   comodos: Comodo[];
   alteracoes: Alteracao[];
+  setor: Setor;
+  onCreated?: () => void;
 }
 
-export const ToggleQuarto = ({ comodos, alteracoes }: ToggleQuartoProps) => {
-  const [quartosExpandidos, setQuartosExpandidos] = useState<string[]>(
-    comodos.length > 0 ? [comodos[0].id] : []
-  );
-
-  const toggleQuarto = (id: string) => {
-    setQuartosExpandidos((prev) =>
-      prev.includes(id) ? prev.filter((qId) => qId !== id) : [...prev, id]
-    );
-  };
+export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQuartoProps) => {
+  const {
+    quartosExpandidos,
+    isModalOpen,
+    comodoSelecionado,
+    toggleQuarto,
+    abrirModalAlteracao,
+    fecharModalAlteracao,
+  } = useToggleQuarto(comodos[0]?.id)
 
   return (
     <>
@@ -61,6 +63,7 @@ export const ToggleQuarto = ({ comodos, alteracoes }: ToggleQuartoProps) => {
                 // O e.stopPropagation evita que o clique no botão abra/feche o toggle
                 onClick={(e) => {
                   e.stopPropagation();
+                  abrirModalAlteracao(comodo.id)
                 }}
                 className="flex items-center gap-1 px-3 py-1.5 border border-slate-200 text-slate-500 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
               >
@@ -114,6 +117,13 @@ export const ToggleQuarto = ({ comodos, alteracoes }: ToggleQuartoProps) => {
           </div>
         );
       })}
+      <ModalAddAlteracao 
+       isOpen={isModalOpen}
+       onClose={fecharModalAlteracao}
+       local={setor}
+       comodo={comodoSelecionado ?? ""}
+       onCreated={onCreated}
+      />
     </>
   );
 };
