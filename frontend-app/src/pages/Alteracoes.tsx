@@ -1,33 +1,19 @@
-import { useState } from "react";
 import { Tabs } from "../components/ui/Tabs";
-import { useQuery } from "@tanstack/react-query";
-import { fetchAlteracoes } from "../services/alteracao.service";
 import {
   ABAS_ALTERACOES,
   getSetorByAba,
-  LABEL_SETOR,
-  MAPEAMENTO_QUARTOS,
-  ORDEM_SETORES,
-  type Setor,
 } from "../constants/locais";
 import { ToggleQuarto } from "../components/pages/Alteracoes/toggleQuarto";
+import { useAlteracoesPage } from "../hooks/useAlteracoesPage";
 
 const abas = ABAS_ALTERACOES;
 
 export const AlteracoesPage = () => {
-  const [setorAtivo, setSetorAtivo] = useState<Setor>(ORDEM_SETORES[0]);
-  
-  const { data: alteracoes, isLoading, isError } = useQuery({
-    queryKey: ['alteracoesAtuais'],
-    queryFn: fetchAlteracoes
-  })
-
-  const listaAlteracoes = alteracoes ?? [];
-  const abaAtiva = LABEL_SETOR[setorAtivo];
-  const comodosSetorAtivo = MAPEAMENTO_QUARTOS[setorAtivo];
-  const alteracoesSetorAtivo = listaAlteracoes.filter(
-    (alteracao) => alteracao.local === setorAtivo
-  );
+  const {
+    setorAtivo, setSetorAtivo,
+    listaAlteracoes, abaAtiva, comodosSetorAtivo, alteracoesSetorAtivo,
+    isLoading, isError
+  } = useAlteracoesPage()
 
   return (
     <div className="space y-10">
@@ -53,6 +39,7 @@ export const AlteracoesPage = () => {
             <ToggleQuarto
               comodos={comodosSetorAtivo}
               alteracoes={alteracoesSetorAtivo}
+              setor={setorAtivo}
             />
           </>
         )}
