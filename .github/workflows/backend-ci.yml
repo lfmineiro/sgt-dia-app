@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -30,6 +34,17 @@ jobs:
         run: |
           cd backend-app
           npm ci
+
+      - name: Auditoria de Segurança (npm audit)
+        run: |
+          cd backend-app
+          npm audit --audit-level=high 
+
+      - name: Rodar Linter
+        run: |
+          cd backend-app
+          npm run lint
+
 
       - name: Validar Prisma Schema
         run: |

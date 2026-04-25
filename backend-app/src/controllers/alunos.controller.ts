@@ -8,8 +8,8 @@ export const criarAluno = async (req: Request, res: Response) => {
     const dadosValidados = criarAlunoSchema.parse(req.body)
     const novoAluno = await criarAlunoService(dadosValidados)
     return res.status(201).json(novoAluno)
-  } catch (err: any) {
-    if(err.message === "ALUNO_JA_CADASTRADO") return res.status(409).json({error: "Aluno já cadastrado"});
+  } catch (err: unknown) {
+    if(err instanceof Error && err.message === "ALUNO_JA_CADASTRADO") return res.status(409).json({error: "Aluno já cadastrado"});
     
     console.error('Erro ao criar o aluno: ', err)
     return res.status(500).json({
@@ -22,7 +22,7 @@ export const listarAlunos = async (req: Request, res: Response) => {
   try{
     const getAlunos = await listarAlunosService();
     res.status(200).json(getAlunos);
-  } catch (err) {
+  } catch {
     console.error("Erro ao listar os Alunos")
     return res.status(500).json({
       error: "Erro interno do servidor ao processar a informação"
@@ -40,11 +40,11 @@ export const atualizarAluno = async (req: Request, res: Response) => {
       const alunoAtualizado = await atualizarAlunoService(numeroAtual, dadosValidados)
       
       return res.status(200).json(alunoAtualizado)
-  } catch (err:any) {
-    if(err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({
+  } catch (err: unknown) {
+    if(err instanceof Error && err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({
         error: "Aluno não encontrado"
       })
-      if(err.message === "NUMERO_EM_USO") return res.status(409).json({
+      if(err instanceof Error && err.message === "NUMERO_EM_USO") return res.status(409).json({
         error: "Novo número já está em uso"
       })
       console.error('Erro ao atualizar aluno: ', err)
@@ -66,11 +66,11 @@ export const deletarAluno = async (req: Request, res: Response) => {
   
     return res.status(204).send();
 
-  } catch (err: any) {
-    if (err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({ error: "Aluno não encontrado" });
+  } catch (err: unknown) {
+    if (err instanceof Error && err.message === "ALUNO_NAO_ENCONTRADO") return res.status(404).json({ error: "Aluno não encontrado" });
 
     const prismaErrorCode =
-      err && typeof err === "object" && "code" in err ? String(err.code) : null;
+      err && typeof err === "object" && "code" in err ? String((err as Record<string, unknown>).code) : null;
 
     if (prismaErrorCode === "P2003") {
       return res.status(409).json({

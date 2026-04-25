@@ -6,24 +6,78 @@ on:
   pull_request:
     branches: [ main ]
 
+# Cancela jobs antigos se um novo commit for feito na mesma branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  docker-build-test:
+  docker-smoke-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      # Como o Docker Compose precisa ler o .env do backend, vamos criar um arquivo de teste
-      - name: Criar .env fake para o Build do Docker
+      - name: Criar .env fake para o Docker Compose
         run: |
           mkdir -p backend-app
-          echo "DATABASE_URL=postgresql://dummy:dummy@localhost:5432/dummy_db?schema=public" > backend-app/.env
+          echo "DATABASE_URL=postgresql://admin:adminpassword@db:5432/sped_db?schema=public" > backend-app/.env
           echo "CLOUDINARY_CLOUD_NAME=dummy" >> backend-app/.env
           echo "CLOUDINARY_API_KEY=dummy" >> backend-app/.env
           echo "CLOUDINARY_API_SECRET=dummy" >> backend-app/.env
           echo "CLOUDINARY_FOLDER=dummy" >> backend-app/.env
 
-      - name: Testar Build do Docker Compose
-        # O argumento --build força a recriação das imagens. 
+      - name: Build das imagens
         run: docker compose build
+
+      - name: Subir serviços para smoke test
+        run: docker compose up -d db backend
+
+      - name: Aguardar banco saudável
+        run: |
+          for i in {1..30}; do
+            # Pega o ID real do contêiner para evitar erros de nomenclatura
+            CONTAINER_ID=$(docker compose ps -q db)
+            if [ -z "$CONTAINER_ID" ]; then
+              echo "Contêiner db ainda não foi criado..."
+            else
+              status=$(docker inspect --format='{{.State.Health.Status}}' $CONTAINER_ID 2>/dev/null || echo "starting")
+              echo "Tentativa $i - status do banco: $status"
+              if [ "$status" = "healthy" ]; then
+                exit 0
+              fi
+            fi
+            sleep 2
+          done
+          echo "Banco não ficou healthy a tempo"
+          docker compose logs db
+          exit 1
+
+      - name: Aguardar backend responder e validar /status
+        run: |
+          for i in {1..40}; do
+            echo "Tentativa $i - checando /status..."
+            response=$(curl -fsS http://localhost:3000/status || true)
+            if [ -n "$response" ]; then
+              echo "$response"
+              # Verifica se contém as chaves esperadas
+              if echo "$response" | grep -q '"status":"online"' && echo "$response" | grep -q '"database":"connected"'; then
+                echo "✅ Backend respondeu /status com database connected"
+                exit 0
+              fi
+            fi
+            sleep 3
+          done
+          echo "❌ Backend não respondeu /status com database connected a tempo"
+          docker compose logs backend
+          exit 1
+
+      - name: Logs em caso de falha
+        if: failure()
+        run: docker compose logs
+
+      - name: Encerrar serviços
+        if: always()
+        run: docker compose down -v

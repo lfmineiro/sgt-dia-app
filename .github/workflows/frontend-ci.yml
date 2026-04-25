@@ -9,6 +9,10 @@ on:
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
@@ -28,6 +32,16 @@ jobs:
         run: |
           cd frontend-app
           npm ci
+
+      - name: Audit de Dependências
+        run: |
+          cd frontend-app
+          npm audit --audit-level=high
+
+      - name: Linter (ESLint)
+        run: |
+          cd frontend-app
+          npm run lint
 
       - name: Check de Tipagem (TypeScript)
         run: |
