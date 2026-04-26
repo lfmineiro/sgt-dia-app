@@ -1,9 +1,8 @@
 import { prisma } from "../lib/prisma.js";
-import type { CriarServicoBody } from "../schemas/servicos.schema.js";
+import { FuncaoMembroGuarnicao } from "@prisma/client";
+import type { CriarServicoBody, ServicoAtualSgtDiaDTO } from "../schemas/servicos.schema.js";
 
 export const criarNovoServico = async (input: CriarServicoBody ) => {
-  const parsedDate = new Date(input.data ?? "")
-
   const servicoCriado = await prisma.$transaction(async (tx) => {
     
     // Primeiro vamos fechar o serviço anterior
@@ -21,7 +20,7 @@ export const criarNovoServico = async (input: CriarServicoBody ) => {
 
     const novoServico = await tx.servico.create({
           data: {
-            data: parsedDate,
+            data: input.data,
             membrosGuarnicao: {
               create: input.membros.map((m) => ({
                 alunoNumero: m.alunoNumero,
@@ -36,4 +35,51 @@ export const criarNovoServico = async (input: CriarServicoBody ) => {
         return novoServico
   }) 
   return servicoCriado
+}
+
+export const listarServicosService = async () => {
+  const servicos = await prisma.servico.findMany({
+    orderBy: {
+      data: 'desc'
+    }
+  })
+  return servicos
+}
+
+export const listarServicoAtualService = async () => {
+  const servicoAtual = await prisma.servico.findFirst({
+    where: { status: 'EM_ANDAMENTO' },
+    include: {
+      membrosGuarnicao: {
+        include: {
+          aluno: true,
+        },
+      },
+    },
+  })
+
+  if (!servicoAtual) {
+    return null
+  }
+
+  const sgtDia = servicoAtual.membrosGuarnicao.find(
+    (membro) => membro.funcao === FuncaoMembroGuarnicao.SGT_DIA,
+  )
+
+  if (!sgtDia) {
+    return null
+  }
+
+  const dto: ServicoAtualSgtDiaDTO = {
+    servicoId: servicoAtual.id,
+    dataServico: servicoAtual.data,
+    statusServico: servicoAtual.status,
+    numero: sgtDia.aluno.numero,
+    nomeGuerra: sgtDia.aluno.nomeGuerra,
+    nomeCompleto: sgtDia.aluno.nomeCompleto,
+    anoFormatura: sgtDia.aluno.anoFormatura,
+    curso: sgtDia.aluno.curso,
+  }
+
+  return dto
 }
