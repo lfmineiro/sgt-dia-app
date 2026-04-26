@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import { Prisma } from "@prisma/client";
-import { CriarServicoSchema, type CriarServicoBody } from "../schemas/servicos.schema.js";
-import { criarNovoServico } from "../services/servicos.service.js";
+import { CriarServicoSchema } from "../schemas/servicos.schema.js";
+import { criarNovoServico, listarServicoAtualService, listarServicosService } from "../services/servicos.service.js";
 
 const PRISMA_CONFLICT_ERRORS: Record<string, string> = {
   P2002: "Já existe um serviço cadastrado para essa data",
@@ -32,3 +32,32 @@ export const criarServico = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const listarServicos = async (req: Request, res: Response) => {
+ try{
+     const getServicos = await listarServicosService();
+     res.status(200).json(getServicos);
+   } catch (err: unknown) {
+     console.error("Erro ao listar os Serviços:", err)
+     return res.status(500).json({
+       error: "Erro interno do servidor ao processar a informação"
+     })
+   }
+} 
+
+export const listarServicoAtual = async (req: Request, res: Response) => {
+  try{
+      const getServicoAtual = await listarServicoAtualService();
+      if (!getServicoAtual) {
+       return res.status(404).json({ message: "Nenhum SGT de dia encontrado para o serviço em andamento." });
+     }
+
+      return res.status(200).json(getServicoAtual);
+
+    } catch (err: unknown) {
+      console.error("Erro ao listar o Serviço Atual: ", err)
+      return res.status(500).json({
+        error: "Erro interno do servidor ao processar a informação"
+      })
+    }
+}
