@@ -1,6 +1,8 @@
 import { prisma } from "../lib/prisma.js"
 import { calcularAnoAluno, verificarCompanhiaDoAluno, ordinal } from "../lib/aluno-utils.js"
 import type { AtualizarSpedInput } from "../schemas/speds.schemas.js"
+import { buscarAlteracoesPorServico } from "./alteracao.service.js"
+import { INSTALACOES_POR_COMPANHIA, TEXTO_PENDENTES } from "../constants/instalacoes.js"
 
 export const obterOuCriarSpedService = async (
   servicoId: string,
@@ -59,6 +61,20 @@ export const gerarTextoSpedService = async (
   servicoId: string,
   companhia: number,
 ): Promise<string> => {
+  const alunosTexto = await gerarTextoAlunosService(servicoId, companhia)
+  const instalacoesTexto = await gerarTextoInstalacoesService(servicoId, companhia)
+
+  const parts: string[] = []
+  if (alunosTexto) parts.push(alunosTexto)
+  if (instalacoesTexto) parts.push("11. Instalações:\n" + instalacoesTexto)
+
+  return parts.join("\n\n")
+}
+
+export const gerarTextoAlunosService = async (
+  servicoId: string,
+  companhia: number,
+): Promise<string> => {
   const servico = await prisma.servico.findUnique({
     where: { id: servicoId },
     include: {
@@ -70,7 +86,6 @@ export const gerarTextoSpedService = async (
 
   if (!servico) throw new Error("SERVICO_NAO_ENCONTRADO")
 
-  // map enum funcao -> label
   const funcaoLabel = (funcao: string) => {
     switch (funcao) {
       case "SGT_DIA":
@@ -96,7 +111,6 @@ export const gerarTextoSpedService = async (
     return 4
   }
 
-  // filter by companhia and compute ano
   const militares = servico.membrosGuarnicao
     .map((m) => {
       const ano = calcularAnoAluno(m.aluno.anoFormatura)
@@ -106,7 +120,6 @@ export const gerarTextoSpedService = async (
 
   if (militares.length === 0) return ""
 
-  // group by funcao + posto (use first escala if present)
   const groups = new Map<string, Array<{ nome: string; ano: number; curso?: string }>>()
 
   for (const { membro, ano } of militares) {
@@ -122,7 +135,6 @@ export const gerarTextoSpedService = async (
     groups.set(key, lista)
   }
 
-  // Sort keys by posto order and funcao (stable)
   const sortedKeys = Array.from(groups.keys()).sort((a, b) => {
     const funcA = (a.split(" ")[0] ?? "") as string
     const funcB = (b.split(" ")[0] ?? "") as string
@@ -137,11 +149,55 @@ export const gerarTextoSpedService = async (
 
   for (const key of sortedKeys) {
     const items = groups.get(key) ?? []
-    // order by nomeGuerra
     items.sort((x, y) => x.nome.localeCompare(y.nome))
     const parts = items.map((it) => `Alu ${ordinal(it.ano)} Ano ${it.curso ?? "CFG"} ${it.nome}`)
     lines.push(`${key}: ${parts.join("; ")};`)
   }
+
+  return lines.join("\n")
+}
+
+export const gerarTextoInstalacoesService = async (
+  servicoId: string,
+  companhia: number,
+): Promise<string> => {
+  const mapa = INSTALACOES_POR_COMPANHIA[companhia] ?? []
+  const alteracoes = await buscarAlteracoesPorServico(servicoId)
+
+  const groups = new Map<string, Array<{ descricao: string; status: string }>>()
+  for (const a of alteracoes) {
+    const key = a.local
+    const lista = groups.get(key) ?? []
+    lista.push({ descricao: a.descricao, status: a.status })
+    groups.set(key, lista)
+  }
+
+  if (mapa.length === 0) return ""
+
+  const lines: string[] = []
+  for (let i = 0; i < mapa.length; i++) {
+    const entry = mapa[i]
+    if (!entry) continue
+    const { local, label } = entry
+    const letra = String.fromCharCode(97 + i) // a, b, c...
+    const itens = groups.get(local) ?? []
+
+    const novas = itens.filter((x) => x.status === "NOVA").map((x) => x.descricao)
+    const resolvidas = itens.filter((x) => x.status === "RESOLVIDA").map((x) => x.descricao)
+
+    const novasText = novas.length > 0 ? novas.join("; ") : "S/A"
+    const pendentesText = TEXTO_PENDENTES
+    const resolvidasText = resolvidas.length > 0 ? resolvidas.join("; ") : "S/A"
+
+    lines.push(`${letra}. ${label}:`)
+    lines.push(`1) Novas: ${novasText};`)
+    lines.push(`2) Pendentes: ${pendentesText};`)
+    lines.push(`3) Resolvidas: ${resolvidasText}.`)
+    lines.push("")
+  }
+
+  // remove last blank line
+  if (lines[lines.length - 1] === "") lines.pop()
 
   return lines.join("\n")
 }
