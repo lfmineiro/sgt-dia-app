@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { buscarSgtDeDia } from '../services/sevicos.service'
+import { buscarSgtDeDia } from '../services/servicos.service'
 
 export const SARGENTO_DIA_ATUAL_QUERY_KEY = ['sargentoDiaAtual']
 

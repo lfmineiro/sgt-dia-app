@@ -1,8 +1,8 @@
 import { Plus, X } from "lucide-react"
-import { Button } from "../../ui/Button"
-import { Input } from "../../ui/Input"
-import { useModalAlteracao } from "../../../hooks/useModalAlteracao"
-import { getLabelComodo, LABEL_SETOR, type Setor } from "../../../constants/locais"
+import { Button } from "../../../components/ui/Button"
+import { Input } from "../../../components/ui/Input"
+import { useModalAlteracao } from "../hooks/useModalAlteracao"
+import { getLabelComodo, LABEL_SETOR, type Setor } from "../constants/locais"
 
 // centralizar a interface -> assim como centralizar a componente de modal pra deixar padrão
 interface ModalProps {

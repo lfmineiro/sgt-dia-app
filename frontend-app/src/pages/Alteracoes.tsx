@@ -2,9 +2,9 @@ import { Tabs } from "../components/ui/Tabs";
 import {
   ABAS_ALTERACOES,
   getSetorByAba,
-} from "../constants/locais";
-import { ToggleQuarto } from "../components/pages/Alteracoes/toggleQuarto";
-import { useAlteracoesPage } from "../hooks/useAlteracoesPage";
+} from "../features/alteracoes/constants/locais";
+import { ToggleQuarto } from "../features/alteracoes/components/ToggleQuarto";
+import { useAlteracoesPage } from "../features/alteracoes/hooks/useAlteracoesPage";
 
 const abas = ABAS_ALTERACOES;
 

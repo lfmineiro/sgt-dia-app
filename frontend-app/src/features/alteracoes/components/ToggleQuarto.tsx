@@ -1,7 +1,7 @@
 import { ChevronDown, ChevronRight, Plus } from "lucide-react";
-import type { Comodo, Setor } from "../../../constants/locais";
-import type { Alteracao } from "../../../types/alterecao.types";
-import { useToggleQuarto } from "../../../hooks/useToggleQuarto";
+import type { Comodo, Setor } from "../constants/locais";
+import type { Alteracao } from "../types/alteracao.types";
+import { useToggleQuarto } from "../hooks/useToggleQuarto";
 import { ModalAddAlteracao } from "./ModalAddAlteracao";
 
 interface ToggleQuartoProps {

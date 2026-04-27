@@ -1,5 +1,5 @@
-import { api } from "./api"
-import type { Alteracao, CriarAlteracaoInput } from "../types/alterecao.types"
+import { api } from "../../../services/api"
+import type { Alteracao, CriarAlteracaoInput } from "../types/alteracao.types"
 
 export const fetchAlteracoes = async (): Promise<Alteracao[] | null> => {
   try {

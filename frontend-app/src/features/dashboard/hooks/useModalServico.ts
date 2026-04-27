@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { buscarAlunos } from "../services/alunos.service";
-import { criarNovoServico } from "../services/sevicos.service";
+import { buscarAlunos } from "../../../services/alunos.service";
+import { criarNovoServico } from "../services/servicos.service";
 import { SARGENTO_DIA_ATUAL_QUERY_KEY } from "./useSargentoDiaAtual";
 import { useServicoFormState } from "./useServicoFormState";
 
