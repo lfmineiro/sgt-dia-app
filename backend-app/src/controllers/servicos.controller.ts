@@ -1,46 +1,21 @@
 import type { Request, Response } from "express";
-import { Prisma, type FuncaoMembroGuarnicao } from "@prisma/client";
-import { prisma } from "../lib/prisma.js";
-
-type CriarServicoBody = {
-  data: string;
-  membros: Array<{ alunoNumero: number; funcao: FuncaoMembroGuarnicao }>;
-};
+import { Prisma } from "@prisma/client";
+import { CriarServicoSchema } from "../schemas/servicos.schema.js";
+import { criarNovoServico, listarServicoAtualService, listarServicosService } from "../services/servicos.service.js";
 
 const PRISMA_CONFLICT_ERRORS: Record<string, string> = {
   P2002: "Já existe um serviço cadastrado para essa data",
   P2003: "Um ou mais membros informados não existem",
 };
 
+// -> Definir o sgt dia 
+// -> setar status FECHADO no serviço que estava EM_ANDAMENTO
+// -> Alterações com status NOVA vão ser passadas para PENDENTE
+
 export const criarServico = async (req: Request, res: Response) => {
   try {
-    const { data, membros } = req.body as Partial<CriarServicoBody>;
-    const parsedDate = new Date(data ?? "");
-
-    if (Number.isNaN(parsedDate.getTime())) {
-      return res.status(400).json({ error: "Data inválida" });
-    }
-
-    if (!Array.isArray(membros) || membros.length === 0) {
-      return res
-        .status(400)
-        .json({ error: "Informe ao menos um membro para o serviço" });
-    }
-
-    const novoServico = await prisma.servico.create({
-      data: {
-        data: parsedDate,
-        membrosGuarnicao: {
-          create: membros.map((m) => ({
-            alunoNumero: m.alunoNumero,
-            funcao: m.funcao,
-          })),
-        },
-      },
-      include: {
-        membrosGuarnicao: true,
-      },
-    });
+    const dadosValidados = CriarServicoSchema.parse(req.body);
+    const novoServico = await criarNovoServico(dadosValidados)
 
     return res.status(201).json(novoServico);
   } catch (err: unknown) {
@@ -57,3 +32,32 @@ export const criarServico = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const listarServicos = async (req: Request, res: Response) => {
+ try{
+     const getServicos = await listarServicosService();
+     res.status(200).json(getServicos);
+   } catch (err: unknown) {
+     console.error("Erro ao listar os Serviços:", err)
+     return res.status(500).json({
+       error: "Erro interno do servidor ao processar a informação"
+     })
+   }
+} 
+
+export const listarServicoAtual = async (req: Request, res: Response) => {
+  try{
+      const getServicoAtual = await listarServicoAtualService();
+      if (!getServicoAtual) {
+       return res.status(404).json({ message: "Nenhum SGT de dia encontrado para o serviço em andamento." });
+     }
+
+      return res.status(200).json(getServicoAtual);
+
+    } catch (err: unknown) {
+      console.error("Erro ao listar o Serviço Atual: ", err)
+      return res.status(500).json({
+        error: "Erro interno do servidor ao processar a informação"
+      })
+    }
+}

@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { buscarAlunos } from "../services/alunos.service";
 import { criarNovoServico } from "../services/sevicos.service";
+import { SARGENTO_DIA_ATUAL_QUERY_KEY } from "./useSargentoDiaAtual";
 import { useServicoFormState } from "./useServicoFormState";
 
 export const useModalServico = (onClose: () => void) => {
@@ -23,7 +24,7 @@ export const useModalServico = (onClose: () => void) => {
   const mutation = useMutation({
     mutationFn: criarNovoServico,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['servicoAtual'] })
+      queryClient.invalidateQueries({ queryKey: SARGENTO_DIA_ATUAL_QUERY_KEY })
       onClose()
     } 
   })

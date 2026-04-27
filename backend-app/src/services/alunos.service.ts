@@ -1,6 +1,6 @@
 import type { Aluno, Prisma } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
-import type { AtualizarAlunoInput, CriarAlunoInput } from "../schemas/alunos.schemas.js"
+import type { CriarAlunoInput } from "../schemas/alunos.schemas.js"
 
 // helpers
 

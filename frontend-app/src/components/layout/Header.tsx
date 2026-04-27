@@ -1,16 +1,12 @@
-import { buscarSargentoDeDia } from "../../services/alunos.service";
-import { useQuery } from '@tanstack/react-query';
 import { Button } from "../ui/Button";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
 import { ModalServico } from "../pages/Dashboard/ModalServico";
+import { useSargentoDiaAtual } from "../../hooks/useSargentoDiaAtual";
 
 export const Header = () => {
 //  vamos puxar da API usando o react Query 
-  const { data: sgtDia, isLoading } = useQuery({
-    queryKey: ['sgtAtual'],
-    queryFn: buscarSargentoDeDia
-  })
+  const { data: sgtDia, isLoading } = useSargentoDiaAtual()
 
   // const nomeSgtDia = "Al 4º Ano Fulano";
   const anoAtual = new Date().getFullYear() % 100;

@@ -1,8 +1,7 @@
 import React from 'react';
 import { LayoutGrid, FileSearch2, CalendarDays, FileSignature, ShieldCheck, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { buscarSargentoDeDia } from '../../services/alunos.service';
-import { useQuery } from '@tanstack/react-query';
+import { useSargentoDiaAtual } from '../../hooks/useSargentoDiaAtual';
 
 // Tipagem simples para os itens de menu
 interface NavItemProps {
@@ -31,10 +30,7 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, active, to }) => (
 
 export const Sidebar = () => {
   const location = useLocation()
-  const { data: sgtDia } = useQuery({
-    queryKey: ['sgtAtual'],
-    queryFn: buscarSargentoDeDia
-  })
+  const { data: sgtDia } = useSargentoDiaAtual()
   return (
     <aside className="flex h-screen w-64 flex-col bg-slate-950 p-6 text-white fixed left-0 top-0 z-40">
       {/* 1. Logo/Nome do Sistema (Topo) */}
@@ -59,7 +55,7 @@ export const Sidebar = () => {
       <div className="mt-auto border-t border-slate-800 pt-6">
         <div className="flex items-center gap-3 mb-4">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-700 text-xl font-bold">
-            {sgtDia?.nomeGuerra[0]}
+            {sgtDia?.nomeGuerra?.[0] ?? "?"}
           </div>
           <div>
             <p className="font-semibold text-white">{sgtDia?.nomeGuerra}</p>

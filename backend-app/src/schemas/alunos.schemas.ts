@@ -13,7 +13,7 @@ const stripUndefinedFields = <T extends Record<string, unknown>>(
 };
 
 
-const numeroSchema = z.coerce
+export const numeroSchema = z.coerce
   .number()
   .int("O número deve ser um valor inteiro")
   .min(10000, "O número do aluno deve ter exatamente 5 dígitos")
