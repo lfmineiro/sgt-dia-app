@@ -10,7 +10,7 @@ import {
   ORDEM_SETORES,
   type Setor,
 } from "../constants/locais";
-import { ToggleQuarto } from "../components/pages/Alteracoes/toggleQuarto";
+import { ToggleQuarto } from "../features/alteracoes/components/ToggleQuarto";
 
 const abas = ABAS_ALTERACOES;
 

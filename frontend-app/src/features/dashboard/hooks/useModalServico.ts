@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { buscarAlunos } from "../services/alunos.service";
-import { criarNovoServico } from "../services/sevicos.service";
+import { buscarAlunos } from "../../../services/alunos.service";
+import { criarNovoServico } from "../services/servicos.service";
 
 export const useModalServico = (onClose: () => void) => {
   const queryClient = useQueryClient()
