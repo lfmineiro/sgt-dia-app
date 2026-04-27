@@ -1,4 +1,3 @@
-import type { Aluno } from '../types/aluno.types';
 import { api } from './api';
 
 export const buscarAlunos = async () => {
