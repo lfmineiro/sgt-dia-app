@@ -62,17 +62,7 @@ export const gerarTextoSpedService = async (
   servicoId: string,
   companhia: number,
 ): Promise<string> => {
-  const alunosTexto = await gerarTextoAlunosService(servicoId, companhia)
-  const instalacoesTexto = await gerarTextoInstalacoesService(servicoId, companhia)
-  const rodapeTexto = await gerarTextoRodapeService()
-
-  const parts: string[] = []
-  if (alunosTexto) parts.push(alunosTexto)
-  if (instalacoesTexto) parts.push("11. Instalações:\n" + instalacoesTexto)
-
-  if (rodapeTexto) parts.push(rodapeTexto)
-
-  return parts.join("\n\n")
+  return await gerarTextoSpedCompletoService(servicoId, companhia)
 }
 
 export const gerarTextoAlunosService = async (
@@ -243,6 +233,58 @@ export const gerarTextoRodapeService = async (): Promise<string> => {
   const linha2 = aluPart.toUpperCase()
 
   return `${linha1}\n${linha2}`
+}
+
+export const gerarTextoSpedCompletoService = async (
+  servicoId: string,
+  companhia: number,
+): Promise<string> => {
+  const sped = await prisma.sped.findUnique({
+    where: { servicoId_companhia: { servicoId, companhia } },
+  }) ?? await obterOuCriarSpedService(servicoId, companhia)
+
+  const safe = (v?: string | null) => (v && v.trim() !== "" ? v : "S/A")
+
+  const item1 = `1. Recebimento do Serviço: ${safe(sped.recebimento)}`
+
+  const alunosTexto = await gerarTextoAlunosService(servicoId, companhia)
+  const item2 = alunosTexto ? `2. Alunos:\n${alunosTexto}` : `2. Alunos: S/A`
+
+  const item3 = `3. Armamento: ${safe(sped.armamento)}`
+  const item4 = `4. Punidos: ${safe(sped.punidos)}`
+  const item5 = `5. Material carga: ${safe(sped.materialCarga)}`
+  const item6 = `6. Visita médica fora do horário de expediente: ${safe(sped.visitaMedica)}`
+  const item7 = `7. Alunos com dispensa: ${safe(sped.alunosDispensa)}`
+  const item8 = `8. Refeições: ${safe(sped.refeicoes)}`
+  const item9 = `9. Ronda: ${safe(sped.ronda)}`
+  const item10 = `10. Revista do Recolher: ${safe(sped.revistaRecolher)}`
+
+  const instalacoesTexto = await gerarTextoInstalacoesService(servicoId, companhia)
+  const item11 = instalacoesTexto ? `11. Instalações:\n${instalacoesTexto}` : `11. Instalações: S/A`
+
+  const item12 = `12. Ocorrências: ${safe(sped.ocorrencias)}`
+  const item13 = `13. Passagem de serviço: ${safe(sped.passagem)}`
+
+  const rodapeTexto = await gerarTextoRodapeService()
+  const parts = [
+    item1,
+    item2,
+    item3,
+    item4,
+    item5,
+    item6,
+    item7,
+    item8,
+    item9,
+    item10,
+    item11,
+    item12,
+    item13,
+  ].filter(Boolean)
+
+  if (rodapeTexto) parts.push(rodapeTexto)
+
+  return parts.join("\n\n")
 }
 
 
