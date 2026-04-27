@@ -91,7 +91,7 @@ model Escala {
 model Sped {
   id              String  @id @default(uuid())
   servicoId       String
-  companhia       String
+  companhia       Int
   recebimento     String
   armamento       String?
   punidos         String  @default("S/A")
@@ -107,6 +107,7 @@ model Sped {
   // Relacionamentos
   servico         Servico @relation(fields: [servicoId], references: [id])
 
+  @@unique([servicoId, companhia])
   @@map("speds")
 }
 

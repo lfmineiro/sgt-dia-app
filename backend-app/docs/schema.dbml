@@ -41,7 +41,7 @@ Table escalas {
 Table speds {
   id String [pk]
   servicoId String [not null]
-  companhia String [not null]
+  companhia Int [not null]
   recebimento String [not null]
   armamento String
   punidos String [not null, default: 'S/A']
