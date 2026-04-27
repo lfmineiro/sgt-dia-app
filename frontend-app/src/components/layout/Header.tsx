@@ -1,8 +1,8 @@
 import { Button } from "../ui/Button";
 import { PlusCircle } from "lucide-react";
 import { useState } from "react";
-import { ModalServico } from "../../features/dashboard/components/ModalServico";
-import { useSargentoDiaAtual } from "../../features/dashboard/hooks/useSargentoDiaAtual";
+import { ModalServico } from "../pages/Dashboard/ModalServico";
+import { useSargentoDiaAtual } from "../../hooks/useSargentoDiaAtual";
 
 export const Header = () => {
 //  vamos puxar da API usando o react Query 

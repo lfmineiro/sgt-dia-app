@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutGrid, FileSearch2, CalendarDays, FileSignature, ShieldCheck, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
-import { useSargentoDiaAtual } from '../../features/dashboard/hooks/useSargentoDiaAtual';
+import { useSargentoDiaAtual } from '../../hooks/useSargentoDiaAtual';
 
 // Tipagem simples para os itens de menu
 interface NavItemProps {
