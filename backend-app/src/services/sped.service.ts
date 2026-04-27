@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma.js"
 import { calcularAnoAluno, verificarCompanhiaDoAluno, ordinal } from "../lib/aluno-utils.js"
 import type { AtualizarSpedInput } from "../schemas/speds.schemas.js"
 import { buscarAlteracoesPorServico } from "./alteracao.service.js"
+import { listarServicoAtualService } from "./servicos.service.js"
 import { INSTALACOES_POR_COMPANHIA, TEXTO_PENDENTES } from "../constants/instalacoes.js"
 
 export const obterOuCriarSpedService = async (
@@ -63,10 +64,13 @@ export const gerarTextoSpedService = async (
 ): Promise<string> => {
   const alunosTexto = await gerarTextoAlunosService(servicoId, companhia)
   const instalacoesTexto = await gerarTextoInstalacoesService(servicoId, companhia)
+  const rodapeTexto = await gerarTextoRodapeService()
 
   const parts: string[] = []
   if (alunosTexto) parts.push(alunosTexto)
   if (instalacoesTexto) parts.push("11. Instalações:\n" + instalacoesTexto)
+
+  if (rodapeTexto) parts.push(rodapeTexto)
 
   return parts.join("\n\n")
 }
@@ -200,6 +204,45 @@ export const gerarTextoInstalacoesService = async (
   if (lines[lines.length - 1] === "") lines.pop()
 
   return lines.join("\n")
+}
+
+const formatDatePt = (d?: Date | string | null) => {
+  if (!d) return ""
+  const date = d instanceof Date ? d : new Date(d)
+  const months = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+  ]
+  const day = date.getDate()
+  const month = months[date.getMonth()] || ""
+  const year = date.getFullYear()
+  return `${day} de ${month} de ${year}`
+}
+
+export const gerarTextoRodapeService = async (): Promise<string> => {
+  const sgt = await listarServicoAtualService()
+  if (!sgt) return "S/A"
+
+  const local = "Quartel da Praia Vermelha"
+  const dataStr = formatDatePt(sgt.dataServico)
+
+  const ano = calcularAnoAluno(sgt.anoFormatura)
+  const aluPart = ano ? `ALU ${ordinal(ano)} Ano ${sgt.nomeGuerra} ${sgt.nomeCompleto}` : `ALU ${sgt.nomeGuerra} ${sgt.nomeCompleto}`
+
+  const linha1 = `${local}, ${dataStr}`
+  const linha2 = aluPart.toUpperCase()
+
+  return `${linha1}\n${linha2}`
 }
 
 
