@@ -86,3 +86,10 @@ export const spedIdParamSchema = z.object({
 });
 
 export type SpedIdParamInput = z.infer<typeof spedIdParamSchema>;
+
+export const spedParamSchema = z.object({
+  servicoId: z.string().uuid("ID do serviço inválido"),
+  companhia: companhiaSchema,
+});
+
+export type SpedParamInput = z.infer<typeof spedParamSchema>;
