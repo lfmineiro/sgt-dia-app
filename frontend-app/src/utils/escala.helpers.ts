@@ -4,7 +4,7 @@ import type {
   EscalaLinha,
   InlineDraft,
   MembroEscalaOption,
-} from '../types/escala.types';
+} from '../../../types/escala.types';
 import { TOTAL_TURNOS_ESCALA } from './turno';
 
 export const POSTOS_INICIAIS = ['Ala 5o Piso', '4o Piso', '3o Piso', 'SegFem'];

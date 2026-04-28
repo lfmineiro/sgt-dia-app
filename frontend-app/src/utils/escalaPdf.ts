@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import type { EscalaLinha } from '../types/escala.types';
+import type { EscalaLinha } from '../../../types/escala.types';
 import { gerarIntervaloPorTurno } from './turno';
 
 interface GerarPdfEscalaParams {
