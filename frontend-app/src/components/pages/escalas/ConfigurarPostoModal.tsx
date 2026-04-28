@@ -1,9 +1,9 @@
 import { Search, X } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import type { AlocacaoFormRow, MembroEscalaOption } from '../types/escala.types';
-import { labelDoMembro } from '../utils/escala.helpers';
-import { obterDescricaoTurno } from '../utils/turno';
+import type { AlocacaoFormRow, MembroEscalaOption } from '../../../types/escala.types';
+import { obterDescricaoTurno } from '../../../utils/turno';
+import { labelDoMembro } from '../../../utils/escala.helpers';
 
 interface ConfigurarPostoModalProps {
   isOpen: boolean;

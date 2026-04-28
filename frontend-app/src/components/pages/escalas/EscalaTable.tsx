@@ -1,5 +1,5 @@
-import type { CampoEditavel, EscalaLinha, InlineDraft } from '../types/escala.types';
-import { gerarIntervaloPorTurno } from '../utils/turno';
+import type { CampoEditavel, EscalaLinha, InlineDraft } from '../../../types/escala.types';
+import { gerarIntervaloPorTurno } from '../../../utils/turno';
 
 interface EscalaTableProps {
   linhas: EscalaLinha[];
