@@ -37,6 +37,15 @@ export const listarAlteracoesAtuais = async (): Promise<Alteracao[]> => {
   return alteracoes
 }
 
+export const buscarAlteracoesPorServico = async (servicoId: string): Promise<Alteracao[]> => {
+  const alteracoes = await prisma.alteracao.findMany({
+    where: { servicoId },
+    orderBy: { criadoEm: "asc" },
+  })
+
+  return alteracoes
+}
+
 export const atualizarStatusAlteracao = async (
   id: string,
   status: Alteracao["status"],

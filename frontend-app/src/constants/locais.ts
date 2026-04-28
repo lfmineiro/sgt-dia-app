@@ -11,10 +11,10 @@ export interface Comodo {
 export const ORDEM_SETORES: Setor[] = ['ALA_5_PISO', 'ALA_4_PISO', 'ALA_3_PISO', 'SEG_FEM'];
 
 export const LABEL_SETOR: Record<Setor, string> = {
-  ALA_5_PISO: 'Ala 5º Piso',
+  ALA_5_PISO: '5º Piso',
   ALA_4_PISO: '4º Piso',
   ALA_3_PISO: '3º Piso',
-  SEG_FEM: 'SegFem',
+  SEG_FEM: 'Aloj Fem',
 };
 
 export const ABAS_ALTERACOES = ORDEM_SETORES.map((setor) => LABEL_SETOR[setor]);
