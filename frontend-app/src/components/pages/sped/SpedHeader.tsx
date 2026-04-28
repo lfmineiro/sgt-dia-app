@@ -1,4 +1,4 @@
-import { Copy } from 'lucide-react';
+import { Copy, Save, FileText } from 'lucide-react';
 import { Button } from '../../ui/Button';
 import type { SpedCompany } from '../../../types/sped.types';
 
@@ -10,6 +10,8 @@ interface SpedHeaderProps {
   servicoId: string;
   onCompanhiaChange: (companhia: SpedCompany) => void;
   onCopy: () => void;
+  onSave?: () => void;
+  onGenerate?: () => void;
 }
 
 export const SpedHeader = ({
@@ -20,6 +22,8 @@ export const SpedHeader = ({
   servicoId,
   onCompanhiaChange,
   onCopy,
+  onSave,
+  onGenerate,
 }: SpedHeaderProps) => {
   return (
     <header className="border-b border-gray-200 bg-white px-8 py-4">
@@ -51,6 +55,26 @@ export const SpedHeader = ({
             className="min-w-44"
           >
             Copiar SPED
+          </Button>
+          <Button
+            type="button"
+            onClick={onSave}
+            disabled={isLoading || isLoadingServicoAtual || !servicoId}
+            isLoading={isLoading}
+            leftIcon={<Save className="h-5 w-5" />}
+            className="min-w-44"
+          >
+            Salvar
+          </Button>
+          <Button
+            type="button"
+            onClick={onGenerate}
+            disabled={isLoading || isLoadingServicoAtual || !servicoId}
+            isLoading={isLoading}
+            leftIcon={<FileText className="h-5 w-5" />}
+            className="min-w-44"
+          >
+            Gerar SPED
           </Button>
         </div>
       </div>

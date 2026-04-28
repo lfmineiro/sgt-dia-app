@@ -12,6 +12,8 @@ export const SpedPage = () => {
     formData,
     handleChange,
     handleCopySped,
+    handleSave,
+    handleGenerate,
     isLoadingServicoAtual,
     isSubmitting,
     message,
@@ -20,6 +22,7 @@ export const SpedPage = () => {
     statusLabel,
     servicoId,
     toggleSection,
+    generatedTexto,
   } = useSpedPage();
 
   return (
@@ -32,6 +35,8 @@ export const SpedPage = () => {
         servicoId={servicoId}
         onCompanhiaChange={setCompanhia}
         onCopy={handleCopySped}
+        onSave={handleSave}
+        onGenerate={handleGenerate}
       />
 
       {message && (
@@ -61,6 +66,12 @@ export const SpedPage = () => {
           onToggleSection={toggleSection}
           onChange={handleChange}
         />
+        {generatedTexto && (
+          <div className="rounded-md border border-gray-200 bg-white p-6">
+            <h2 className="mb-3 text-lg font-semibold">Texto gerado</h2>
+            <pre className="whitespace-pre-wrap break-words text-sm text-gray-800">{generatedTexto}</pre>
+          </div>
+        )}
       </main>
     </div>
   );

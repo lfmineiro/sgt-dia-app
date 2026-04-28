@@ -148,6 +148,70 @@ export const useSpedPage = () => {
     }
   };
 
+  const handleSave = async () => {
+    if (!servicoId) {
+      showMessage('error', 'Serviço não identificado');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await atualizarSped(servicoId, companhia, {
+        recebimento: toOptionalText(formData.recebimento),
+        passagem: toOptionalText(formData.passagem),
+        armamento: toOptionalText(formData.armamento),
+        punidos: toOptionalText(formData.punidos),
+        visitaMedica: toOptionalText(formData.visitaMedica),
+        alunosDispensa: toOptionalText(formData.alunosDispensa),
+        materialCarga: toOptionalText(formData.materialCarga),
+        refeicoes: toOptionalText(formData.refeicoes),
+        ronda: toOptionalText(formData.ronda),
+        revistaRecolher: toOptionalText(formData.revistaRecolher),
+        ocorrencias: toOptionalText(formData.ocorrencias),
+      });
+
+      showMessage('success', 'SPED salvo com sucesso');
+      // refetch current sped
+      try {
+        await spedQuery.refetch();
+      } catch (e) {
+        // ignore
+      }
+    } catch (error) {
+      console.error('Erro ao salvar SPED:', error);
+      showMessage('error', 'Erro ao salvar SPED');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const [generatedTexto, setGeneratedTexto] = useState<string | null>(null);
+
+  const handleGenerate = async () => {
+    if (!servicoId) {
+      showMessage('error', 'Serviço não identificado');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const texto = await obterTextoSped(servicoId, companhia);
+      if (!texto) {
+        showMessage('error', 'Erro ao gerar texto do SPED');
+        return;
+      }
+
+      setGeneratedTexto(texto);
+    } catch (error) {
+      console.error('Erro ao gerar SPED:', error);
+      showMessage('error', 'Erro ao gerar SPED');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const toggleSection = (section: string) => {
     setOpenSection((current) => (current === section ? null : section));
   };
@@ -167,5 +231,8 @@ export const useSpedPage = () => {
     statusLabel,
     servicoId,
     toggleSection,
+    generatedTexto,
+    handleSave,
+    handleGenerate,
   };
 };
