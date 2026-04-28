@@ -7,6 +7,7 @@ import alunosRoutes from './routes/alunos.routes.js'
 import servicosRoutes from './routes/servicos.routes.js'
 import escalasRoutes from './routes/escalas.routes.js'
 import alteracoesRoutes from './routes/alteracoes.routes.js'
+import spedRoutes from './routes/sped.routes.js'
 
 const app = express();
 const PORT = 3000;
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/', healthRoutes)
 app.use('/api/alunos', alunosRoutes)
 app.use('/api/servicos', servicosRoutes)
+app.use('/api/servicos', spedRoutes)
 app.use('/api/escalas', escalasRoutes)
 app.use('/api/alteracoes', alteracoesRoutes)
 
