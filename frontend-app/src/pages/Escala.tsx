@@ -4,9 +4,9 @@ import {
   ConfigurarPostoModal,
   EscalaHeader,
   EscalaTable,
-  PostoTabs,
-  useEscalaViewModel,
-} from '../features/escala';
+  PostoTabs
+} from '../components/pages/escalas/index';
+import { useEscalaViewModel } from '../hooks/useEscalaViewModel';
 
 export const EscalaPage = () => {
   const viewModel = useEscalaViewModel();
