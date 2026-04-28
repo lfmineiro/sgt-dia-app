@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   atualizarEscalaService,
@@ -43,7 +43,7 @@ export const useEscalaViewModel = () => {
   const [fimTerceiroHorario, setFimTerceiroHorario] = useState<string>(
     FIM_TERCEIRO_HORARIO_PADRAO,
   );
-  const [inlineDrafts, setInlineDrafts] = useState<Record<string, InlineDraft>>({});
+  const [inlineDraftsUsuario, setInlineDraftsUsuario] = useState<Record<string, InlineDraft>>({});
 
   const dataExtenso = useMemo(() => {
     return new Intl.DateTimeFormat('pt-BR', {
@@ -88,9 +88,13 @@ export const useEscalaViewModel = () => {
     return filtrarMembrosPorTermo(termo, membrosDisponiveis);
   };
 
-  useEffect(() => {
-    setInlineDrafts(criarInlineDrafts(escalasQuery.data ?? []));
+  const inlineDraftsCalculados = useMemo(() => {
+    return criarInlineDrafts(escalasQuery.data ?? []);
   }, [escalasQuery.data]);
+
+  const inlineDrafts = useMemo(() => {
+    return { ...inlineDraftsCalculados, ...inlineDraftsUsuario };
+  }, [inlineDraftsCalculados, inlineDraftsUsuario]);
 
   const configurarEscalaMutation = useMutation({
     mutationFn: (payload: ConfigurarEscalaPayload) => configurarPostoEscalaService(payload),
@@ -207,7 +211,7 @@ export const useEscalaViewModel = () => {
   };
 
   const atualizarInline = (id: string, campo: CampoEditavel, valor: string) => {
-    setInlineDrafts((atual) => {
+    setInlineDraftsUsuario((atual) => {
       const existente = atual[id] ?? { quarto: '', cama: '' };
       return {
         ...atual,
