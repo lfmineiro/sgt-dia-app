@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { TopBar } from './components/layout/TopBar';
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      <Text>Meu MVP Mobile!</Text>
+      <TopBar userNameInitials='LF'/>
     </View>
   );
 }
@@ -11,7 +12,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
   },
+
 });
