@@ -7,7 +7,7 @@ interface TopBarProps {
   userNameInitials: string;
 }
 
-export function TopBar({ userNameInitials }: TopBarProps) {
+export const TopBar = ({ userNameInitials }: TopBarProps) => {
   // Isso pega os espaços seguros do celular (topo, base, lados)
   const insets = useSafeAreaInsets();
 
@@ -24,8 +24,8 @@ export function TopBar({ userNameInitials }: TopBarProps) {
         </View>
         
         <View style={styles.tituloApp}>
-          <Text style={styles.titulo}>Sistema</Text>
-          <Text style={styles.subTitulo}>Administrativo</Text>
+          <Text style={styles.titulo}>Sargento</Text>
+          <Text style={styles.subTitulo}>de Dia IME</Text>
         </View>
       </View>
 
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',       
     paddingHorizontal: 20,
     paddingBottom: 16,
-    borderBottomWidth: 1,      
+    borderBottomWidth: 1, // linha divisoria       
     borderBottomColor: '#334155',
     width: '100%',
   },

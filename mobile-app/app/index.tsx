@@ -1,10 +1,12 @@
+import { TabsHeader } from '@/src/components/layout/TabsHeader';
+import { TopBar } from '@/src/components/layout/TopBar';
 import { View, StyleSheet } from 'react-native';
-import { TopBar } from './components/layout/TopBar';
 
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <TopBar userNameInitials='LF'/>
+      <TabsHeader />
     </View>
   );
 }
