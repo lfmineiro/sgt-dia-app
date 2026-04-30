@@ -1,10 +1,11 @@
+import { abas } from '@/src/constants/locals';
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
 export const TabsHeader = () => {
   const [activeTab, setActiveTab] = useState('Ala 5º Piso');
 
-  const tabs = ['Ala 5º Piso', '4º Piso', '3º Piso', 'SegFem'];
+  const tabs = abas;
 
   return (
     <View style={styles.container}>
