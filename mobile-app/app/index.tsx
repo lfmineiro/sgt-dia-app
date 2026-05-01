@@ -1,9 +1,26 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { TabsHeader } from '@/src/components/layout/TabsHeader';
+import { TopBar } from '@/src/components/layout/TopBar';
+import { ToggleQuartos } from '@/src/components/pages/Alteracoes/toggleQuartos';
+import { ABAS_ALTERACOES } from '@/src/constants/locais';
+import { useState } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
 
 export default function HomeScreen() {
+  const [abaAtiva, setAbaAtiva] = useState(ABAS_ALTERACOES[0])
+  
   return (
     <View style={styles.container}>
-      <Text>Meu MVP Mobile!</Text>
+      <TopBar userNameInitials='LF'/>
+      <TabsHeader 
+      abaAtiva={abaAtiva}
+      onMudarAba={setAbaAtiva}
+      />
+      <ScrollView style={styles.listaQuartos}>
+        <ToggleQuartos 
+        abaAtiva={abaAtiva}
+        />
+        
+      </ScrollView>
     </View>
   );
 }
@@ -11,7 +28,12 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
     alignItems: 'center',
   },
+
+  listaQuartos: {
+    marginTop: 10,
+    width: '90%'
+  },
+
 });

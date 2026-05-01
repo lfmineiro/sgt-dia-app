@@ -22,3 +22,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+/mobile-app/.expo
+mobile-app/expo-env.d.ts
