@@ -1,11 +1,16 @@
-import { abas } from '@/src/constants/locals';
-import React, { useState } from 'react';
+import { ABAS_ALTERACOES } from '@/src/constants/locais';
+import React from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
-export const TabsHeader = () => {
-  const [activeTab, setActiveTab] = useState('Ala 5º Piso');
+type TabHeaderProps = {
+  abaAtiva: string
+  onMudarAba: (aba: string) => void
+}
 
-  const tabs = abas;
+export const TabsHeader = ({ abaAtiva, onMudarAba }: TabHeaderProps) => {
+
+
+  const tabs = ABAS_ALTERACOES;
 
   return (
     <View style={styles.container}>
@@ -15,12 +20,12 @@ export const TabsHeader = () => {
         contentContainerStyle={styles.scrollContent}
       >
         {tabs.map((tab) => {
-          const isActive = activeTab === tab;
+          const isActive = abaAtiva === tab;
           
           return (
             <Pressable
               key={tab}
-              onPress={() => setActiveTab(tab)}
+              onPress={() => onMudarAba(tab)}
               style={[
                 styles.tabItem,
                 isActive && styles.activeTabItem 
