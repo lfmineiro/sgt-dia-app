@@ -24,3 +24,4 @@ dist-ssr
 *.sw?
 /mobile-app/.expo
 mobile-app/expo-env.d.ts
+mobile-app/.env
