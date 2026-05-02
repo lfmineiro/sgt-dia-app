@@ -1,6 +1,6 @@
 import { TabsHeader } from '@/src/components/layout/TabsHeader';
 import { TopBar } from '@/src/components/layout/TopBar';
-import { ToggleQuartos } from '@/src/components/pages/Alteracoes/toggleQuartos';
+import { ToggleQuartos } from '@/src/components/pages/Alteracoes/ToggleQuartos';
 import { ABAS_ALTERACOES } from '@/src/constants/locais';
 import { useAlteracoes } from '@/src/hooks/useAlteracoes';
 import { useState } from 'react';
