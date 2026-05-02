@@ -108,7 +108,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
   },
-  areaExpandida: {},
-  listaVazia: {},
+  areaExpandida: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  listaVazia: {
+    color: '#94A3B8',
+    fontStyle: 'italic',
+    marginTop: 12,
+    textAlign: 'center',
+  },
 });
   
