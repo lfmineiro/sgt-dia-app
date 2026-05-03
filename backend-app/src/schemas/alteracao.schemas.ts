@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SetorLocal } from "@prisma/client";
+import { SetorLocal, StatusAlteracao } from "@prisma/client";
 
 export const criarAlteracaoSchema = z.object({
   local: z.enum(SetorLocal),
@@ -15,10 +15,32 @@ export const alteracaoIdParamSchema = z.object({
 });
 
 export const atualizarStatusAlteracaoSchema = z.object({
-  status: z.enum(["NOVA", "PENDENTE", "RESOLVIDA"]),
+  status: z.enum(StatusAlteracao),
 });
 
 export type AtualizarStatusAlteracaoInput = z.infer<typeof atualizarStatusAlteracaoSchema>;
+
+export const listarAlteracoesQuerySchema = z.object({
+  status: z.enum(StatusAlteracao).optional(),
+  local: z.enum(SetorLocal).optional(),
+  comodo: z.string().optional(),
+});
+
+export type ListarAlteracoesQueryInput = z.infer<typeof listarAlteracoesQuerySchema>;
+
+export const atualizarAlteracaoSchema = z
+  .object({
+    descricao: z.string().min(5, "Informe uma descrição mais detalhada").optional(),
+    local: z.enum(SetorLocal).optional(),
+    fotoUrl: z.string().url("URL da foto inválida").nullable().optional(),
+    comodo: z.string().optional(),
+    status: z.enum(StatusAlteracao).optional(),
+  })
+  .refine((dados) => Object.values(dados).some((valor) => valor !== undefined), {
+    message: "Informe ao menos um campo para atualizar",
+  });
+
+export type AtualizarAlteracaoInput = z.infer<typeof atualizarAlteracaoSchema>;
 
 
 

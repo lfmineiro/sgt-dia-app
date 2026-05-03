@@ -1,18 +1,36 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
-import { criarAlteracao, uploadFotoAlteracao } from "../services/alteracao.service"
-import type { Setor } from "../constants/locais"
+import {
+  atualizarAlteracao,
+  criarAlteracao,
+  uploadFotoAlteracao,
+} from "../services/alteracao.service"
+import { MAPEAMENTO_QUARTOS, type Setor } from "../constants/locais"
+import type { Alteracao, StatusAlteracao } from "../types/alterecao.types"
 
 interface UseModalAlteracaoParams {
   onClose: () => void
   local: Setor
   comodo: string
-  onCreated?: () => void
+  alteracao?: Alteracao | null
+  onSaved?: () => void
 }
 
-export const useModalAlteracao = ({ onClose, local, comodo, onCreated }: UseModalAlteracaoParams) => {
+export const useModalAlteracao = ({
+  onClose,
+  local,
+  comodo,
+  alteracao,
+  onSaved,
+}: UseModalAlteracaoParams) => {
   const queryClient = useQueryClient()
-  const [descricao, setDescricao] = useState("")
+  const isEdicao = Boolean(alteracao)
+  const [descricao, setDescricao] = useState(alteracao?.descricao ?? "")
+  const [localSelecionado, setLocalSelecionado] = useState<Setor>(alteracao?.local ?? local)
+  const [comodoSelecionado, setComodoSelecionado] = useState<string>(alteracao?.comodo ?? comodo)
+  const [statusSelecionado, setStatusSelecionado] = useState<StatusAlteracao>(
+    alteracao?.status ?? "NOVA",
+  )
   const [arquivo, setArquivo] = useState<File | null>(null)
   const [erro, setErro] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -30,8 +48,25 @@ export const useModalAlteracao = ({ onClose, local, comodo, onCreated }: UseModa
     }
   }, [previewUrl])
 
+  // Atualiza o cômodo imediatamente quando o local é alterado,
+  // evitando setState dentro de um useEffect que pode causar renders encadeados.
+  const handleMudarLocal = (novoLocal: Setor) => {
+    setLocalSelecionado(novoLocal)
+
+    const novosComodos = MAPEAMENTO_QUARTOS[novoLocal] ?? []
+
+    if (novosComodos.length > 0) {
+      setComodoSelecionado(novosComodos[0].id)
+    } else {
+      setComodoSelecionado("")
+    }
+  }
+
   const resetForm = () => {
-    setDescricao("")
+    setDescricao(alteracao?.descricao ?? "")
+    setLocalSelecionado(alteracao?.local ?? local)
+    setComodoSelecionado(alteracao?.comodo ?? comodo)
+    setStatusSelecionado(alteracao?.status ?? "NOVA")
     setArquivo(null)
     setErro(null)
     setIsSubmitting(false)
@@ -66,10 +101,31 @@ export const useModalAlteracao = ({ onClose, local, comodo, onCreated }: UseModa
       fotoUrl = upload.fotoUrl
     }
 
+    if (isEdicao && alteracao) {
+      const alteracaoAtualizada = await atualizarAlteracao(alteracao.id, {
+        descricao: descricaoLimpa,
+        local: localSelecionado,
+        comodo: comodoSelecionado,
+        fotoUrl: fotoUrl ?? alteracao.fotoUrl,
+        status: statusSelecionado,
+      })
+
+      if (!alteracaoAtualizada) {
+        setErro("Não foi possível atualizar a alteração.")
+        setIsSubmitting(false)
+        return
+      }
+
+      await queryClient.invalidateQueries({ queryKey: ["alteracoesAtuais"] })
+      onSaved?.()
+      handleClose()
+      return
+    }
+
     const alteracaoCriada = await criarAlteracao({
       descricao: descricaoLimpa,
-      local,
-      comodo,
+      local: localSelecionado,
+      comodo: comodoSelecionado,
       fotoUrl,
     })
 
@@ -80,13 +136,21 @@ export const useModalAlteracao = ({ onClose, local, comodo, onCreated }: UseModa
     }
 
     await queryClient.invalidateQueries({ queryKey: ["alteracoesAtuais"] })
-    onCreated?.()
+    onSaved?.()
     handleClose()
   }
 
   return {
     descricao,
     setDescricao,
+    localSelecionado,
+    setLocalSelecionado: handleMudarLocal,
+    setLocalSelecionadoRaw: setLocalSelecionado,
+    comodoSelecionado,
+    setComodoSelecionado,
+    statusSelecionado,
+    setStatusSelecionado,
+    isEdicao,
     arquivo,
     setArquivo,
     erro,
@@ -95,5 +159,6 @@ export const useModalAlteracao = ({ onClose, local, comodo, onCreated }: UseModa
     handleSubmit,
     handleClose,
     previewUrl,
+    fotoAtualUrl: alteracao?.fotoUrl ?? null,
   }
 }

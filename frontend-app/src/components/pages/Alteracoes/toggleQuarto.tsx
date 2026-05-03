@@ -1,8 +1,9 @@
-import { ChevronDown, ChevronRight, Plus } from "lucide-react";
+import {  ChevronDown, ChevronRight, Plus } from "lucide-react";
 import type { Comodo, Setor } from "../../../constants/locais";
 import type { Alteracao } from "../../../types/alterecao.types";
 import { useToggleQuarto } from "../../../hooks/useToggleQuarto";
 import { ModalAddAlteracao } from "./ModalAddAlteracao";
+import { DetalhesAlteracao } from "./DetalhesAlteracao";
 
 interface ToggleQuartoProps {
   comodos: Comodo[];
@@ -12,21 +13,27 @@ interface ToggleQuartoProps {
 }
 
 export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQuartoProps) => {
+  
   const {
     quartosExpandidos,
     isModalOpen,
     comodoSelecionado,
+    alteracaoSelecionada,
     toggleQuarto,
     abrirModalAlteracao,
+    abrirModalEdicaoAlteracao,
     fecharModalAlteracao,
+    handleResolverAlteracao,
   } = useToggleQuarto(comodos[0]?.id)
 
   return (
     <>
       {comodos.map((comodo) => {
         const isExpandido = quartosExpandidos.includes(comodo.id);
-        const alteracoesComodo = alteracoes.filter((item) => item.comodo === comodo.id);
-        const status = alteracoesComodo.length > 0 ? "Pendente" : "Verificado";
+        const alteracoesComodo = alteracoes.filter((item) => item.comodo === comodo.id && item.status !== "RESOLVIDA");
+        const status = alteracoesComodo.some((item) => item.status !== "RESOLVIDA")
+          ? "Pendente"
+          : "Verificado";
 
         return (
           <div
@@ -44,9 +51,6 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
                 </span>
                 <span className="font-semibold text-slate-800">{comodo.label}</span>
 
-                {/* da pra transformar em component em /alteracao */}
-                {/* lógica vai ser quando se criar um serviço por padrão as alterações não terão sidos verificadas e ao verificar todas as alterações de um quarto ou qlqr recinto o status muda */}
-                {/* Salvar em algum cantos os diferentes recintos de cada alojamento */}
                 <span
                   className={`px-2.5 py-1 text-xs font-medium rounded-md ${
                     status === "Verificado"
@@ -58,9 +62,7 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
                 </span>
               </div>
 
-              {/* Botão de Adicionar Alteração */}
               <button
-                // O e.stopPropagation evita que o clique no botão abra/feche o toggle
                 onClick={(e) => {
                   e.stopPropagation();
                   abrirModalAlteracao(comodo.id)
@@ -79,38 +81,11 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
                 )}
 
                 {alteracoesComodo.map((alteracao) => (
-                  <div key={alteracao.id} className="flex gap-6">
-                    <div className="w-40 h-40 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-sm font-medium shrink-0 overflow-hidden">
-                      {alteracao.fotoUrl ? (
-                        <img
-                          src={alteracao.fotoUrl}
-                          alt="Foto da alteração"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        "80 x 80"
-                      )}
-                    </div>
-
-                    {/* Dados da Alteração */}
-                    <div className="flex flex-col gap-3">
-                      <p className="text-slate-700 font-medium">{alteracao.descricao}</p>
-
-                      <label className="flex items-center gap-2 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-slate-600">Alteração Verificada</span>
-                      </label>
-
-                      <div>
-                        <button className="mt-2 px-4 py-1.5 border-2 border-emerald-500 text-emerald-600 text-sm font-medium rounded-lg hover:bg-emerald-50 transition-colors">
-                          Alteração Resolvida
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <DetalhesAlteracao 
+                    alteracao={alteracao} 
+                    abrirModalEdicaoAlteracao={abrirModalEdicaoAlteracao}
+                    handleResolverAlteracao={handleResolverAlteracao}
+                  />
                 ))}
               </div>
             )}
@@ -122,7 +97,8 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
        onClose={fecharModalAlteracao}
        local={setor}
        comodo={comodoSelecionado ?? ""}
-       onCreated={onCreated}
+       alteracao={alteracaoSelecionada}
+       onSaved={onCreated}
       />
     </>
   );

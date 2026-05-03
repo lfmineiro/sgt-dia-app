@@ -7,20 +7,24 @@ import {
   type Setor,
 } from "../constants/locais"
 import { fetchAlteracoes } from "../services/alteracao.service"
+import type { Alteracao } from "../types/alterecao.types"
 
 export const useAlteracoesPage = () => {
   const [setorAtivo, setSetorAtivo] = useState<Setor>(ORDEM_SETORES[0])
 
-  const { data: alteracoes, isLoading, isError } = useQuery({
+  const { data: alteracoes = [], isLoading, isError } = useQuery<Alteracao[]>({
     queryKey: ["alteracoesAtuais"],
-    queryFn: fetchAlteracoes,
+    queryFn: async () => {
+      const result = await fetchAlteracoes()
+      return result ?? []
+    },
   })
 
-  const listaAlteracoes = alteracoes ?? []
+  const listaAlteracoes = alteracoes as Alteracao[]
   const abaAtiva = LABEL_SETOR[setorAtivo]
   const comodosSetorAtivo = MAPEAMENTO_QUARTOS[setorAtivo]
   const alteracoesSetorAtivo = listaAlteracoes.filter(
-    (alteracao) => alteracao.local === setorAtivo,
+    (alteracao: Alteracao) => alteracao.local === setorAtivo,
   )
 
 

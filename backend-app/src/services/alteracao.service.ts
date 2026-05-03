@@ -1,6 +1,10 @@
 import type { Alteracao } from "@prisma/client"
 import { prisma } from "../lib/prisma.js"
-import type { CriarAlteracaoInput } from "../schemas/alteracao.schemas.js"
+import type {
+  AtualizarAlteracaoInput,
+  CriarAlteracaoInput,
+  ListarAlteracoesQueryInput,
+} from "../schemas/alteracao.schemas.js"
 
 
 export const criarAlteracao = async (data: CriarAlteracaoInput): Promise<Alteracao> => {
@@ -24,14 +28,16 @@ export const criarAlteracao = async (data: CriarAlteracaoInput): Promise<Alterac
   return alteracaoNova
 }
 
-export const listarAlteracoesAtuais = async (): Promise<Alteracao[]> => {
-
+export const listarAlteracoes = async (
+  filtros: ListarAlteracoesQueryInput = {},
+): Promise<Alteracao[]> => {
   const alteracoes = await prisma.alteracao.findMany({
     where: {
-      status: {
-        in: ['PENDENTE', 'NOVA' ]
-      },
-    }
+      ...(filtros.status ? { status: filtros.status } : {}),
+      ...(filtros.local ? { local: filtros.local } : {}),
+      ...(filtros.comodo ? { comodo: filtros.comodo } : {}),
+    },
+    orderBy: { criadoEm: "desc" },
   })
 
   return alteracoes
@@ -62,5 +68,28 @@ export const atualizarStatusAlteracao = async (
   return await prisma.alteracao.update({
     where: { id },
     data: { status },
+  })
+}
+
+export const atualizarAlteracao = async (
+  id: string,
+  data: AtualizarAlteracaoInput,
+): Promise<Alteracao> => {
+  const alteracaoExistente = await prisma.alteracao.findUnique({
+    where: { id },
+    select: { id: true },
+  })
+
+  if (!alteracaoExistente) {
+    throw new Error("ALTERACAO_NAO_ENCONTRADA")
+  }
+
+  const dadosParaAtualizacao = Object.fromEntries(
+    Object.entries(data).filter(([, valor]) => valor !== undefined),
+  )
+
+  return prisma.alteracao.update({
+    where: { id },
+    data: dadosParaAtualizacao,
   })
 }

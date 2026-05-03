@@ -32,3 +32,13 @@ export const ServicoAtualSgtDiaSchema = z.object({
 })
 
 export type ServicoAtualSgtDiaDTO = z.infer<typeof ServicoAtualSgtDiaSchema>
+
+export const servicoIdParamSchema = z.object({
+  id: z.string().uuid("ID do serviço inválido"),
+});
+
+export const atualizarServicoSchema = z.object({
+  status: z.enum(StatusServico),
+});
+
+export type AtualizarServicoInput = z.infer<typeof atualizarServicoSchema>

@@ -6,6 +6,7 @@ import { MainLayout } from './layouts/MainComponent'
 import { AlteracoesPage } from './pages/Alteracoes'
 import { EscalaPage } from './pages/Escala'
 import { SpedPage } from './pages/Sped'
+import { ConfiguracoesPage } from './pages/Configuracoes'
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
       <Route path='/alteracoes' element={<AlteracoesPage />} />
       <Route path='/escala' element={<EscalaPage />} />
       <Route path='/sped' element={<SpedPage />} />
+      <Route path='/configuracoes' element={<ConfiguracoesPage />} />
     </Route>
   </Routes>
   )

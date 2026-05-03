@@ -83,3 +83,15 @@ export const listarServicoAtualService = async () => {
 
   return dto
 }
+
+export const atualizarServicoService = async (
+  servicoId: string,
+  status: 'EM_ANDAMENTO' | 'FECHADO'
+) => {
+  const servicoAtualizado = await prisma.servico.update({
+    where: { id: servicoId },
+    data: { status },
+  })
+
+  return servicoAtualizado
+}
