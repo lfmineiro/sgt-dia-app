@@ -21,14 +21,12 @@ export default function HomeScreen() {
   const onSave = async (descricao: string, imagemUri: string | null) => {
     if (!comodoSelecionado) return false
 
-    const ok = await handleCriarAlteracao({
+    return await handleCriarAlteracao({
       descricao,
       imagemUri,
       local: getSetorByAba(abaAtiva),
       comodo: comodoSelecionado,
     })
-  if (ok) fecharModal()
-  return ok
   }
 
 
