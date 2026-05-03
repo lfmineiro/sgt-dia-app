@@ -1,30 +1,27 @@
 import { getSetorByAba, MAPEAMENTO_QUARTOS } from "@/src/constants/locais"
 import { ComodoCard } from "./ComodoCard"
 import type { Alteracao } from "@/src/types/alteracao.types"
+import { useAlteracoes } from "@/src/hooks/useAlteracoes"
 
 type ToggleQuartosProps = {
   abaAtiva: string
   alteracoes: Alteracao[] | null
+  handleResolverAlteracao: ((id: string) => void)
 }
 
-export const ToggleQuartos = ({ abaAtiva, alteracoes }: ToggleQuartosProps) => {
+export const ToggleQuartos = ({ abaAtiva, alteracoes, handleResolverAlteracao }: ToggleQuartosProps) => {
   const setorChave = getSetorByAba(abaAtiva)
 
   const comodos = MAPEAMENTO_QUARTOS[setorChave]
 
-  const handleResolverAlteracao = (idAlteracao: string) => {
-    // Aqui vai entrar a chamada da API (PATCH) depois!
-    console.log("Clicou em resolver a alteração de ID:", idAlteracao);
-  };
-  
   return (
     comodos.map((comodo) => {
-      const temAlteracaoPendente =  alteracoes?.some(
-        alt => alt.comodo === comodo.id 
-      )
-      const alteracoesFiltradas = alteracoes ? alteracoes?.filter(alt => alt.comodo === comodo.id) : null
-
+      const alteracoesFiltradas = alteracoes ? alteracoes?.filter(alt => alt.comodo === comodo.id && alt.status !== "RESOLVIDA") : null
+      
+      const temAlteracaoPendente =  (alteracoesFiltradas?.length ?? 0) > 0
+      
       const statusLabel = temAlteracaoPendente ? "Pendente" : "Verificado"
+
       return (
         <ComodoCard
         key={comodo.id}
