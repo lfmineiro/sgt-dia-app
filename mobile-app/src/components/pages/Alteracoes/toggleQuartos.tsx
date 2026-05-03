@@ -1,21 +1,15 @@
 import { getSetorByAba, MAPEAMENTO_QUARTOS } from "@/src/constants/locais"
 import { ComodoCard } from "./ComodoCard"
-import type { Alteracao } from "@/src/types/alteracao.types"
-import { useAlteracoes } from "@/src/hooks/useAlteracoes"
+import type { ToggleQuartosProps } from "@/src/types/components.types"
 
-type ToggleQuartosProps = {
-  abaAtiva: string
-  alteracoes: Alteracao[] | null
-  handleResolverAlteracao: ((id: string) => void)
-}
-
-export const ToggleQuartos = ({ abaAtiva, alteracoes, handleResolverAlteracao }: ToggleQuartosProps) => {
+export const ToggleQuartos = ({ abaAtiva, alteracoes, handleResolverAlteracao, onAbrirModal }: ToggleQuartosProps) => {
   const setorChave = getSetorByAba(abaAtiva)
 
   const comodos = MAPEAMENTO_QUARTOS[setorChave]
 
   return (
     comodos.map((comodo) => {
+
       const alteracoesFiltradas = alteracoes ? alteracoes?.filter(alt => alt.comodo === comodo.id && alt.status !== "RESOLVIDA") : null
       
       const temAlteracaoPendente =  (alteracoesFiltradas?.length ?? 0) > 0
@@ -26,9 +20,11 @@ export const ToggleQuartos = ({ abaAtiva, alteracoes, handleResolverAlteracao }:
         <ComodoCard
         key={comodo.id}
         nomeComodo={comodo.label}
+        comodoId={comodo.id}
         status={statusLabel}
         alteracoes={alteracoesFiltradas}
         onResolverAlteracao={handleResolverAlteracao}
+        onAbrirModalAdicionar={onAbrirModal}
         /> 
 
       )

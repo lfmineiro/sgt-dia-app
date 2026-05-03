@@ -1,17 +1,11 @@
-import type { Alteracao } from "@/src/types/alteracao.types";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useState } from "react";
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { AlteracaoItem } from "./AlteracaoItem";
+import type { ComodoCardProps } from "@/src/types/components.types";
 
-interface RoomCardProps {
-  nomeComodo: string;
-  status: 'Verificado' | 'Pendente'; 
-  alteracoes: Alteracao[] | null
-  onResolverAlteracao: (id: string) => void
-}
 
-export const ComodoCard = ({ nomeComodo, status, alteracoes, onResolverAlteracao }: RoomCardProps) => {
+export const ComodoCard = ({ nomeComodo, comodoId, status, alteracoes, onResolverAlteracao, onAbrirModalAdicionar }: ComodoCardProps) => {
 
   const [isExpandido, setIsExpandido] = useState(false)
 
@@ -46,6 +40,7 @@ export const ComodoCard = ({ nomeComodo, status, alteracoes, onResolverAlteracao
           color="#94A3B8"
         />
       </Pressable>
+
       {isExpandido && (
         <View style={styles.areaExpandida}>
           {alteracoes?.length === 0 ? (
@@ -59,6 +54,13 @@ export const ComodoCard = ({ nomeComodo, status, alteracoes, onResolverAlteracao
               />
             ))
           )}
+          <Pressable 
+            style={styles.btnAdicionar} 
+            onPress={() => onAbrirModalAdicionar(comodoId, nomeComodo)}
+          >
+            <MaterialCommunityIcons name="plus" size={20} color="#2563EB" />
+            <Text style={styles.btnAdicionarText}>Registrar Nova Alteração</Text>
+          </Pressable>
         </View>
       )}
     </View>
@@ -120,5 +122,22 @@ const styles = StyleSheet.create({
     marginTop: 12,
     textAlign: 'center',
   },
+  btnAdicionar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 16,
+    paddingVertical: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#BFDBFE', // Azul clarinho
+    backgroundColor: '#EFF6FF', // Fundo azul bem fraco
+    gap: 8, // Espaço entre ícone e texto
+  },
+  btnAdicionarText: {
+    color: '#2563EB', // Azul forte (padrão Tailwind)
+    fontSize: 14,
+    fontWeight: '600',
+  }
 });
   
