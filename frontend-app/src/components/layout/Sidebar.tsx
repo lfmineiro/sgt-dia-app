@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutGrid, FileSearch2, CalendarDays, FileSignature, ShieldCheck, LogOut } from 'lucide-react';
+import { LayoutGrid, FileSearch2, CalendarDays, FileSignature, ShieldCheck, LogOut, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSargentoDiaAtual } from '../../hooks/useSargentoDiaAtual';
 
@@ -50,6 +50,7 @@ export const Sidebar = () => {
         <NavItem to='/alteracoes' icon={<FileSearch2 className="h-6 w-6" />} label="Alterações" active={location.pathname === '/alteracoes'}/>
         <NavItem to='/escala' icon={<CalendarDays className="h-6 w-6" />} label="Escala" active={location.pathname === '/escala'}/>
         <NavItem to='/sped' icon={<FileSignature className="h-6 w-6" />} label="SPED" active={location.pathname === '/sped'}/>
+        <NavItem to='/configuracoes' icon={<Settings className="h-6 w-6" />} label="Configurações" active={location.pathname === '/configuracoes'}/>
       </nav>
 
       <div className="mt-auto border-t border-slate-800 pt-6">

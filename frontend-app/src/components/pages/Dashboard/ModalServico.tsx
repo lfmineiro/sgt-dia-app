@@ -4,13 +4,21 @@ import { Input } from "../../ui/Input"
 import { useModalServico } from "../../../hooks/useModalServico"
 import type { Aluno } from "../../../types/aluno.types"
 
+interface Servico {
+  id: string
+  data: string
+  status?: 'EM_ANDAMENTO' | 'FECHADO'
+  membros?: { alunoNumero: number; funcao: string }[]
+}
 
 interface ModalProps {
   isOpen: boolean
   onClose: () => void
+  servico?: Servico | null
 }
 
-export const ModalServico = ({ isOpen, onClose }: ModalProps) => {
+export const ModalServico = ({ isOpen, onClose, servico }: ModalProps) => {
+  const isEdicao = Boolean(servico)
   const { 
     dataServico, setDataServico, membros, alunos, 
     adicionarMembro, removerMembro, atualizarMembro,
@@ -24,12 +32,17 @@ export const ModalServico = ({ isOpen, onClose }: ModalProps) => {
         <Button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
           <X size={24} />
         </Button>
+
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">
+          {isEdicao ? "Visualizar Serviço" : "Criar Serviço"}
+        </h2>
       
         <Input 
         label="Data"
-        type="data"
+        type="date"
         value={dataServico}
         onChange={(e) => setDataServico(e.target.value)}
+        disabled={isEdicao}
         className="mt-4 mb-4"
         />
 
@@ -43,7 +56,8 @@ export const ModalServico = ({ isOpen, onClose }: ModalProps) => {
               <select 
                 value={membro.alunoNumero}
                 onChange={(e) => atualizarMembro(index, 'alunoNumero', e.target.value)}
-                className="flex-1 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isEdicao}
+                className="flex-1 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
               >
                 <option value="">Selecionar Aluno...</option>
                 {alunos.map((aluno: Aluno) => (
@@ -57,7 +71,8 @@ export const ModalServico = ({ isOpen, onClose }: ModalProps) => {
               <select 
                 value={membro.funcao}
                 onChange={(e) => atualizarMembro(index, 'funcao', e.target.value)}
-                className="w-1/3 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isEdicao}
+                className="w-1/3 p-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-slate-100 disabled:cursor-not-allowed"
               >
                 <option value="">Função...</option>
                 <option value="SGT_DIA">Sgt Dia</option>
@@ -69,25 +84,28 @@ export const ModalServico = ({ isOpen, onClose }: ModalProps) => {
               {/* Botão Remover Linha */}
               <button 
                 onClick={() => removerMembro(index)}
-                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                disabled={isEdicao}
+                className="p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Trash2 size={18} />
               </button>
             </div>
           ))}
 
-          <Button 
-          leftIcon={<Plus />}
-          onClick={adicionarMembro}>Adicionar Aluno</Button>
+          {!isEdicao && (
+            <Button 
+            leftIcon={<Plus />}
+            onClick={adicionarMembro}>Adicionar Aluno</Button>
+          )}
 
         </div>
         
         <Button 
         className="mt-6"
         onClick={handleSalvar}
-        disabled={isSalvando}
+        disabled={isSalvando || isEdicao}
         >
-          Criar Serviço
+          {isEdicao ? "Fechar" : "Criar Serviço"}
         </Button>
 
 
