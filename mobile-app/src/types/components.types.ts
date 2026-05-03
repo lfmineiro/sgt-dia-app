@@ -26,7 +26,7 @@ export interface ModalNovaAlteracaoProps {
   visible: boolean;
   onClose: () => void;
   comodoNome: string;
-  onSave: (descricao: string, imagemUri: string | null) => Promise<void>;
+  onSave: (descricao: string, imagemUri: string | null) => Promise<boolean>;
 }
 
 export interface PhotoPickerProps {
