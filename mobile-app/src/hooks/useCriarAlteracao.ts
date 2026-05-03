@@ -29,7 +29,10 @@ export const useCriarAlteracao = ({ onSucesso }: UseCriarAlteracaoParams) => {
     
         if(imagemUri) {
           const upload = await uploadFotoAlteracao(imagemUri)
-          if (!upload) return false
+          if (!upload) {
+            setErro("Não foi possível enviar a foto.")
+            return false
+          }
           fotoUrl = upload.fotoUrl
         }
         const novaAlteracao = await criarAlteracao({
