@@ -11,9 +11,9 @@ export const useAlteracaoForm = () => {
     setIsSubmitting(true)
     try {
       await onSave(descricao, imagemUri)
+      resetForm()
     } finally {
       setIsSubmitting(false)
-      resetForm()
     }
   }
 
