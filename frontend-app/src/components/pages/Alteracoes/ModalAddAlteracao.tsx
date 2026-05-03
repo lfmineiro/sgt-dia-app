@@ -1,8 +1,16 @@
 import { Plus, X } from "lucide-react"
+import { useEffect } from "react"
 import { Button } from "../../ui/Button"
 import { Input } from "../../ui/Input"
 import { useModalAlteracao } from "../../../hooks/useModalAlteracao"
-import { getLabelComodo, LABEL_SETOR, type Setor } from "../../../constants/locais"
+import {
+  getLabelComodo,
+  LABEL_SETOR,
+  MAPEAMENTO_QUARTOS,
+  ORDEM_SETORES,
+  type Setor,
+} from "../../../constants/locais"
+import type { Alteracao } from "../../../types/alterecao.types"
 
 // centralizar a interface -> assim como centralizar a componente de modal pra deixar padrão
 interface ModalProps {
@@ -10,15 +18,47 @@ interface ModalProps {
   onClose: () => void
   local: Setor
   comodo: string
-  onCreated?: () => void
+  alteracao?: Alteracao | null
+  onSaved?: () => void
 }
 
-export const ModalAddAlteracao = ({ isOpen, onClose, local, comodo, onCreated }: ModalProps) => {
+export const ModalAddAlteracao = ({
+  isOpen,
+  onClose,
+  local,
+  comodo,
+  alteracao,
+  onSaved,
+}: ModalProps) => {
   
   const {
-    handleSubmit, descricao, setDescricao, fileInputRef, setArquivo,
-    isSubmitting, erro, handleClose, previewUrl
-  } = useModalAlteracao({ onClose, local, comodo, onCreated })
+    handleSubmit,
+    descricao,
+    setDescricao,
+    localSelecionado,
+    setLocalSelecionado,
+    comodoSelecionado,
+    setComodoSelecionado,
+    statusSelecionado,
+    setStatusSelecionado,
+    isEdicao,
+    fileInputRef,
+    setArquivo,
+    isSubmitting,
+    erro,
+    handleClose,
+    previewUrl,
+    fotoAtualUrl,
+  } = useModalAlteracao({ onClose, local, comodo, alteracao, onSaved })
+
+  useEffect(() => {
+    if (!isEdicao) return
+
+    const comodosDaLocalSelecionada = MAPEAMENTO_QUARTOS[localSelecionado] ?? []
+    if (!comodosDaLocalSelecionada.some((item) => item.id === comodoSelecionado) && comodosDaLocalSelecionada[0]) {
+      setComodoSelecionado(comodosDaLocalSelecionada[0].id)
+    }
+  }, [comodoSelecionado, isEdicao, localSelecionado, setComodoSelecionado])
 
 
   if(!isOpen) return null 
@@ -30,8 +70,61 @@ export const ModalAddAlteracao = ({ isOpen, onClose, local, comodo, onCreated }:
           <X size={24} />
         </Button>
 
-        <p className="text-sm text-slate-500">Local: <strong>{LABEL_SETOR[local]}</strong></p>
-        <p className="text-sm text-slate-500 mb-3">Cômodo: <strong>{getLabelComodo(comodo)}</strong></p>
+        <p className="text-xl font-semibold text-slate-900 mb-1">
+          {isEdicao ? "Editar alteração" : "Criar alteração"}
+        </p>
+
+        {isEdicao ? (
+          <div className="grid gap-4 md:grid-cols-3 mb-3">
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-slate-900">Local</span>
+              <select
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                value={localSelecionado}
+                onChange={(event) => setLocalSelecionado(event.target.value as Setor)}
+              >
+                {ORDEM_SETORES.map((setor) => (
+                  <option key={setor} value={setor}>
+                    {LABEL_SETOR[setor]}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-slate-900">Cômodo</span>
+              <select
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                value={comodoSelecionado}
+                onChange={(event) => setComodoSelecionado(event.target.value)}
+              >
+                {(MAPEAMENTO_QUARTOS[localSelecionado] ?? []).map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-sm font-medium text-slate-900">Status</span>
+              <select
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                value={statusSelecionado}
+                onChange={(event) => setStatusSelecionado(event.target.value as typeof statusSelecionado)}
+              >
+                <option value="NOVA">Nova</option>
+                <option value="PENDENTE">Pendente</option>
+                <option value="RESOLVIDA">Resolvida</option>
+              </select>
+            </label>
+          </div>
+        ) : (
+          <>
+            <p className="text-sm text-slate-500">Local: <strong>{LABEL_SETOR[local]}</strong></p>
+            <p className="text-sm text-slate-500 mb-3">Cômodo: <strong>{getLabelComodo(comodo)}</strong></p>
+          </>
+        )}
       
         <Input 
         label="Descrição"
@@ -57,12 +150,12 @@ export const ModalAddAlteracao = ({ isOpen, onClose, local, comodo, onCreated }:
             leftIcon={<Plus />}
             onClick={() => fileInputRef.current?.click()}
           >
-            Adicionar Foto
+            {isEdicao ? "Alterar foto" : "Adicionar Foto"}
           </Button>
 
-          {previewUrl && (
+          {(previewUrl || fotoAtualUrl) && (
             <img 
-              src={previewUrl}
+              src={previewUrl ?? fotoAtualUrl ?? ""}
               className="h-40 w-40"
             />
             
@@ -80,7 +173,7 @@ export const ModalAddAlteracao = ({ isOpen, onClose, local, comodo, onCreated }:
         disabled={isSubmitting}
         className="mt-6"
         >
-          Criar Alteração
+          {isEdicao ? "Salvar Alteração" : "Criar Alteração"}
         </Button>
 
 
