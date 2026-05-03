@@ -10,10 +10,13 @@ export default function ModalNovaAlteracao({ visible, onClose, comodoNome, onSav
 
   const { descricao, setDescricao, imagemUri, setImagemUri, isSubmitting, maxLength, handleSalvar, resetForm } = useAlteracaoForm()
 
-    const onSalvarComReset = async (desc: string, img: string | null) => {
-    await onSave(desc, img)
-    resetForm()
-    onClose()
+  const onSalvarComReset = async (desc: string, img: string | null) => {
+    const saved = await onSave(desc, img)
+
+    if (saved) {
+      resetForm()
+      onClose()
+    }
   }
 
   return (
