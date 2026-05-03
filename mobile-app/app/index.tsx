@@ -9,7 +9,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 export default function HomeScreen() {
   const [abaAtiva, setAbaAtiva] = useState(ABAS_ALTERACOES[0])
   
-  const { alteracoes } = useAlteracoes()
+  const { alteracoes, handleResolverAlteracao } = useAlteracoes()
 
   return (
     <View style={styles.container}>
@@ -22,6 +22,7 @@ export default function HomeScreen() {
         <ToggleQuartos 
         abaAtiva={abaAtiva}
         alteracoes={alteracoes}
+        handleResolverAlteracao={handleResolverAlteracao}
         />
         
       </ScrollView>
