@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, Pressable, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { Alteracao } from "@/src/types/alteracao.types";
-
-interface AlteracaoItemProps {
-  alteracao: Alteracao;
-  onResolver: (id: string) => void;
-}
+import type { AlteracaoItemProps } from '@/src/types/components.types';
 
 export function AlteracaoItem({ alteracao, onResolver }: AlteracaoItemProps) {
   const [verificado, setVerificado] = useState(false);

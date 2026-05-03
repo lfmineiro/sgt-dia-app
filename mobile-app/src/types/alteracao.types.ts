@@ -17,3 +17,12 @@ export interface CriarAlteracaoInput {
   comodo: string
   fotoUrl: string | null
 }
+
+export interface PayloadUploadFoto {fotoUrl: string, publicId: string}
+
+export interface CriarAlteracaoParams {
+  descricao: string
+  imagemUri: string | null
+  local: Setor
+  comodo: string
+}
