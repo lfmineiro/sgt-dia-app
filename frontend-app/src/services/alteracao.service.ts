@@ -1,9 +1,16 @@
 import { api } from "./api"
-import type { Alteracao, CriarAlteracaoInput } from "../types/alterecao.types"
+import type {
+  AtualizarAlteracaoInput,
+  Alteracao,
+  CriarAlteracaoInput,
+  StatusAlteracao,
+} from "../types/alterecao.types"
 
-export const fetchAlteracoes = async (): Promise<Alteracao[] | null> => {
+export const fetchAlteracoes = async (
+  params?: Partial<{ status: StatusAlteracao; local: string; comodo: string }>,
+): Promise<Alteracao[] | null> => {
   try {
-    const response = await api.get('/alteracoes')
+    const response = await api.get('/alteracoes', { params })
     if(response.data) {
       return response.data
     }
@@ -54,6 +61,42 @@ export const criarAlteracao = async (
     return null
   } catch (error) {
     console.error("Erro ao criar alteração: ", error)
+    return null
+  }
+}
+
+export const atualizarAlteracao = async (
+  alteracaoId: string,
+  payload: AtualizarAlteracaoInput,
+): Promise<Alteracao | null> => {
+  try {
+    const response = await api.patch(`/alteracoes/${alteracaoId}`, payload)
+
+    if (response.data) {
+      return response.data
+    }
+
+    return null
+  } catch (error) {
+    console.error("Erro ao atualizar alteração: ", error)
+    return null
+  }
+}
+
+export async function atualizarStatusAlteracao(
+  alteracaoId: string,
+  status: StatusAlteracao = "RESOLVIDA",
+): Promise<Alteracao | null> {
+  try {
+    const response = await api.patch(`/alteracoes/${alteracaoId}/status`, { status })
+
+    if (response.data) {
+      return response.data
+    }
+
+    return null
+  } catch (error) {
+    console.error("Erro ao atualizar status da alteração: ", error)
     return null
   }
 }

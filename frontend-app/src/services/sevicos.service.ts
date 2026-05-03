@@ -33,3 +33,26 @@ export const buscarSgtDeDia = async (): Promise<ServicoAtualSgtDiaDTO | null> =>
     return null;
   }
 };
+
+export const fetchServicos = async () => {
+  try {
+    const response = await api.get('/servicos');
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao buscar serviços:", error);
+    return [];
+  }
+};
+
+export const atualizarServico = async (
+  servicoId: string,
+  status: 'EM_ANDAMENTO' | 'FECHADO'
+) => {
+  try {
+    const response = await api.patch(`/servicos/${servicoId}`, { status });
+    return response.data;
+  } catch (error) {
+    console.error("Erro ao atualizar serviço:", error);
+    throw error;
+  }
+};
