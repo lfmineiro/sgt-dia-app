@@ -6,12 +6,14 @@ export const useAlteracaoForm = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const maxLength = 500
 
-  const handleSalvar = async (onSave: (desc: string, img: string | null) => Promise<void>) => {
+  const handleSalvar = async (onSave: (desc: string, img: string | null) => Promise<boolean>) => {
     if (!descricao.trim()) return
     setIsSubmitting(true)
     try {
-      await onSave(descricao, imagemUri)
-      resetForm()
+      const saved = await onSave(descricao, imagemUri)
+      if (saved) {
+        resetForm()
+      }
     } finally {
       setIsSubmitting(false)
     }
