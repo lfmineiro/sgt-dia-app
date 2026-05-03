@@ -1,12 +1,14 @@
 import type { Setor } from "../constants/locais"
 
+export type StatusAlteracao = "NOVA" | "PENDENTE" | "RESOLVIDA"
+
 export interface Alteracao {
   id: string,
   descricao: string,
   local: Setor,
   fotoUrl: string | null,
   comodo: string,
-  status: string
+  status: StatusAlteracao
 }
 
 export interface CriarAlteracaoInput {
