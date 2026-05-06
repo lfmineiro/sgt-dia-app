@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { LABEL_SETOR, ORDEM_SETORES } from "../constants/locais";
+import { getLabelComodo, LABEL_SETOR, ORDEM_SETORES } from "../constants/locais";
 import type { Alteracao } from "../types/alterecao.types";
 
 export interface DashboardActivity {
@@ -22,8 +22,8 @@ const tituloAtividadePorStatus: Record<Alteracao["status"], string> = {
 };
 
 const tonePorSetor: Record<string, DashboardStat["tone"]> = {
-  ALA_5_PISO: "success",
-  ALA_4_PISO: "danger",
+  ALA_5_PISO: "default",
+  ALA_4_PISO: "default",
   ALA_3_PISO: "default",
   SEG_FEM: "default",
 };
@@ -33,7 +33,7 @@ export const useDashboardMetrics = (alteracoes: Alteracao[]) => {
     return alteracoes.slice(0, 5).map((alteracao) => ({
       id: alteracao.id,
       title: tituloAtividadePorStatus[alteracao.status],
-      description: `${LABEL_SETOR[alteracao.local]} • ${alteracao.comodo}`,
+      description: `${LABEL_SETOR[alteracao.local]} • ${getLabelComodo(alteracao.comodo)}`,
       variant: alteracao.status === "RESOLVIDA" ? "success" : "warning",
     }));
   }, [alteracoes]);
