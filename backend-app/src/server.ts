@@ -8,6 +8,7 @@ import servicosRoutes from './routes/servicos.routes.js'
 import escalasRoutes from './routes/escalas.routes.js'
 import alteracoesRoutes from './routes/alteracoes.routes.js'
 import spedRoutes from './routes/sped.routes.js'
+import avisosRoutes from './routes/avisos.routes.js'
 
 const app = express();
 const PORT = 3000;
@@ -21,6 +22,7 @@ app.use('/api/servicos', servicosRoutes)
 app.use('/api/servicos', spedRoutes)
 app.use('/api/escalas', escalasRoutes)
 app.use('/api/alteracoes', alteracoesRoutes)
+app.use('/api/avisos', avisosRoutes)
 
 app.get('/', (req, res) => {
   res.send('Hello World! Vendo se Atualiza');

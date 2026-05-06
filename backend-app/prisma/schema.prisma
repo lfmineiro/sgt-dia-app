@@ -54,6 +54,7 @@ model Servico {
   membrosGuarnicao MembroGuarnicao[]
   speds            Sped[]
   alteracoes       Alteracao[]
+  avisos           Aviso[]
 
   @@map("servicos")
 }
@@ -129,10 +130,15 @@ model Alteracao {
 
 model Aviso {
   id        String   @id @default(uuid())
+  servicoId String
   titulo    String
   descricao String
-  ativo     Boolean  @default(true)
   criadoEm  DateTime @default(now())
+
+  // Relacionamentos
+  servico   Servico  @relation(fields: [servicoId], references: [id])
+
+  @@index([servicoId, criadoEm])
 
   @@map("avisos")
 }
