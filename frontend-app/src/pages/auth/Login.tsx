@@ -4,11 +4,13 @@ import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import { Navigate } from 'react-router-dom';
 
 const LoginPage = () => {
 
   const navigate = useNavigate()
   const { login, loading, error } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [usuario, setUsuario] = useState('');
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
@@ -23,6 +25,10 @@ const LoginPage = () => {
       // O contexto já expõe uma mensagem em `error`.
     }
   };
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="flex items-center justify-center bg-slate-100 h-screen">
