@@ -1,7 +1,8 @@
 import React from 'react';
 import { LayoutGrid, FileSearch2, CalendarDays, FileSignature, ShieldCheck, LogOut, Settings } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSargentoDiaAtual } from '../../hooks/useSargentoDiaAtual';
+import { useAuth } from '../../hooks/useAuth';
 
 // Tipagem simples para os itens de menu
 interface NavItemProps {
@@ -30,7 +31,14 @@ const NavItem: React.FC<NavItemProps> = ({ icon, label, active, to }) => (
 
 export const Sidebar = () => {
   const location = useLocation()
+  const navigate = useNavigate()
   const { data: sgtDia } = useSargentoDiaAtual()
+  const { logout } = useAuth()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
   return (
     <aside className="flex h-screen w-64 flex-col bg-slate-950 p-6 text-white fixed left-0 top-0 z-40">
       {/* 1. Logo/Nome do Sistema (Topo) */}
@@ -63,7 +71,16 @@ export const Sidebar = () => {
             <p className="text-sm text-slate-400">{sgtDia?.curso}</p>
           </div>
         </div>
-        <NavItem to= "/login" icon={<LogOut className="h-6 w-6" />} label="Sair do Sistema" />
+        <button
+          onClick={handleLogout}
+          className="
+            flex w-full items-center gap-3 rounded-xl px-4 py-3 text-lg font-medium transition-colors duration-150
+            text-slate-300 hover:bg-slate-800 hover:text-white
+          "
+        >
+          <LogOut className="h-6 w-6" />
+          <span>Sair do Sistema</span>
+        </button>
       </div>
     </aside>
   );
