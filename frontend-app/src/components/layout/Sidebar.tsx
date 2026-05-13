@@ -47,8 +47,8 @@ export const Sidebar = () => {
           <ShieldCheck className="h-7 w-7 text-white" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold">Sistema</h1>
-          <p className="text-sm text-slate-400">Administrativo</p>
+          <h1 className="text-2xl font-bold">Sargento</h1>
+          <p className="text-sm text-slate-400">de Dia IME</p>
         </div>
       </div>
 
