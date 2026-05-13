@@ -1,11 +1,34 @@
-import { Eye, Lock, LogIn, User } from 'lucide-react'
+import { useState } from 'react';
+import { Eye, EyeOff, Lock, LogIn, User } from 'lucide-react'
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { Navigate } from 'react-router-dom';
 
 const LoginPage = () => {
 
   const navigate = useNavigate()
+  const { login, loading, error } = useAuth();
+  const { isAuthenticated } = useAuth();
+  const [usuario, setUsuario] = useState('');
+  const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    try {
+      await login({ usuario, senha });
+      navigate('/dashboard');
+    } catch {
+      // O contexto já expõe uma mensagem em `error`.
+    }
+  };
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return (
     <div className="flex items-center justify-center bg-slate-100 h-screen">
@@ -18,19 +41,21 @@ const LoginPage = () => {
           <p className="text-2xl text-slate-600">Acesse sua conta para continuar</p>
         </div>
 
-        <form className="space-y-9">
+        <form className="space-y-9" onSubmit={handleSubmit}>
 
               <Input
-                label='Email'
-                type="email"
-                name="email"
-                placeholder="seu.email@exemplo.com"
+                label='Usuário'
+                type="text"
+                name="usuario"
+                placeholder="Digite seu usuário"
                 iconLeft = {<User />}
+                value={usuario}
+                onChange={(event) => setUsuario(event.target.value)}
               />
 
               <Input
-                label="password"
-                type="password"
+                label="Senha"
+                type={mostrarSenha ? 'text' : 'password'}
                 name="password"
                 placeholder="Digite sua senha"
                 iconLeft = {<Lock />}
@@ -38,11 +63,20 @@ const LoginPage = () => {
                   <button
                 type="button"
                 aria-label="Mostrar ou ocultar senha"
+                onClick={() => setMostrarSenha((current) => !current)}
               >
-                <Eye className="h-8 w-8" />
+                {mostrarSenha ? <EyeOff className="h-8 w-8" /> : <Eye className="h-8 w-8" />}
               </button>
                 }
+                value={senha}
+                onChange={(event) => setSenha(event.target.value)}
               />  
+
+          {error && (
+            <div className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+              {error}
+            </div>
+          )}
           
           <div className="text-center">
             <a href="#" className="text-xl text-blue-600 hover:text-blue-800 hover:underline">Esqueceu sua senha?</a>
@@ -53,17 +87,13 @@ const LoginPage = () => {
             size='lg'
             className='w-full'
             rightIcon={<LogIn className='h-6 w-6' />}
-            onClick={() => navigate('/dashboard')}
+            isLoading={loading}
           >
             Entrar
           </Button>
         </form>
 
         <div className="my-12 border-b border-slate-200"></div>
-
-        <div className="text-center text-xl text-slate-600">
-          Ainda não tem conta? <a href="#" className="text-blue-600 hover:text-blue-800 hover:underline">Solicitar acesso</a>
-        </div>
       </div>
     </div>
   );
