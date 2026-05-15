@@ -7,7 +7,10 @@ COPY package*.json ./
 RUN npm ci
 COPY prisma ./prisma
 COPY prisma.config.ts ./
-RUN npx prisma generate
+# DATABASE_URL fake apenas para satisfazer prisma.config.ts em build-time —
+# `prisma generate` lê o schema mas não conecta no banco. A URL real é
+# injetada em runtime pelo docker-compose.
+RUN DATABASE_URL="postgresql://x:x@x:5432/x" npx prisma generate
 
 # ----- stage 2: runtime -----
 FROM node:20-alpine AS runtime
