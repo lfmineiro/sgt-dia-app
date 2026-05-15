@@ -25,3 +25,11 @@ dist-ssr
 /mobile-app/.expo
 mobile-app/expo-env.d.ts
 mobile-app/.env
+
+# Env files
+.env
+.env.production
+backend-app/.env
+frontend-app/.env
+
+

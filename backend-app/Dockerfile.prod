@@ -1,0 +1,22 @@
+# syntax=docker/dockerfile:1.7
+
+# ----- stage 1: deps + prisma client -----
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY prisma ./prisma
+COPY prisma.config.ts ./
+RUN npx prisma generate
+
+# ----- stage 2: runtime -----
+FROM node:20-alpine AS runtime
+WORKDIR /app
+ENV NODE_ENV=production
+COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/prisma ./prisma
+COPY package*.json tsconfig.json prisma.config.ts ./
+COPY src ./src
+EXPOSE 3000
+# migrate deploy é idempotente e aplica também a migration de seed
+CMD ["sh", "-c", "npx prisma migrate deploy && npm start"]

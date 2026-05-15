@@ -12,7 +12,7 @@ import avisosRoutes from './routes/avisos.routes.js'
 import authRoutes from './routes/auth.routes.js'
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(cors());
 app.use(express.json());

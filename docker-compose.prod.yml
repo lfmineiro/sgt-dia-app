@@ -1,0 +1,62 @@
+name: sgt-dia-prod   # isola networks/volumes do compose dev
+
+services:
+  db:
+    image: postgres:15
+    container_name: sgt_dia_db_prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    # SEM `ports`: db acessível apenas pela network interna do compose
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend-app
+      dockerfile: Dockerfile.prod
+    container_name: sgt_dia_backend_prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1d}
+      AUTH_LOGIN_USER: ${AUTH_LOGIN_USER}
+      AUTH_LOGIN_PASSWORD: ${AUTH_LOGIN_PASSWORD}
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY}
+      CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET}
+      CLOUDINARY_FOLDER: ${CLOUDINARY_FOLDER:-sgt_dia_alteracoes}
+    ports:
+      - "8002:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend-app
+      dockerfile: Dockerfile.prod
+      args:
+        # VITE_API_URL é resolvido em build-time pelo Vite e congelado no bundle.
+        # Trocar exige rebuild: `DEPLOY_NOCACHE=1 ./scripts/deploy.sh`
+        VITE_API_URL: ${VITE_API_URL}
+    container_name: sgt_dia_frontend_prod
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata_prod:   # volume separado do `pgdata` do dev — não compartilha dados
