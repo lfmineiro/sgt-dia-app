@@ -85,6 +85,7 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
                     alteracao={alteracao} 
                     abrirModalEdicaoAlteracao={abrirModalEdicaoAlteracao}
                     handleResolverAlteracao={handleResolverAlteracao}
+                    key={alteracao.id}
                   />
                 ))}
               </div>
