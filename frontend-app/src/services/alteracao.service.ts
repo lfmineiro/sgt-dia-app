@@ -100,3 +100,13 @@ export async function atualizarStatusAlteracao(
     return null
   }
 }
+
+export const removerAlteracao = async (alteracaoId: string): Promise<boolean> => {
+  try {
+    await api.delete(`/alteracoes/${alteracaoId}`)
+    return true
+  } catch (error) {
+    console.error("Erro ao remover alteração: ", error)
+    return false
+  }
+}

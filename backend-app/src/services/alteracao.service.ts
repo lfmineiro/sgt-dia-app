@@ -93,3 +93,18 @@ export const atualizarAlteracao = async (
     data: dadosParaAtualizacao,
   })
 }
+
+export const deletarAlteracao = async (id: string): Promise<void> => {
+  const alteracaoExistente = await prisma.alteracao.findUnique({
+    where: { id },
+    select: { id: true },
+  })
+
+  if (!alteracaoExistente) {
+    throw new Error("ALTERACAO_NAO_ENCONTRADA")
+  }
+
+  await prisma.alteracao.delete({
+    where: { id },
+  })
+}

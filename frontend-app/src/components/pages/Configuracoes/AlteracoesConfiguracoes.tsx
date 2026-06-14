@@ -4,16 +4,29 @@ import { Button } from '../../ui/Button'
 import { Input } from '../../ui/Input'
 import { ModalAddAlteracao } from '../Alteracoes/ModalAddAlteracao'
 import type { Alteracao } from '../../../types/alterecao.types'
+import { Trash2 } from 'lucide-react'
+import { ModalConfirmacaoExclusao } from './ModalConfirmacaoExclusao'
 
 export const AlteracoesConfiguracoes = () => {
   const {
     alteracoes,
     isLoadingAlteracoes,
     isErrorAlteracoes,
+    removerAlteracao,
+    isRemovingAlteracao,
   } = useConfiguracoes()
 
   const [alteracaoSelecionada, setAlteracaoSelecionada] = useState<Alteracao | null>(null)
+  const [alteracaoParaExcluir, setAlteracaoParaExcluir] = useState<string | null>(null)
   const [filtro, setFiltro] = useState('')
+
+  const handleConfirmarExclusao = () => {
+    if (alteracaoParaExcluir) {
+      removerAlteracao(alteracaoParaExcluir, {
+        onSuccess: () => setAlteracaoParaExcluir(null)
+      })
+    }
+  }
 
   const alteracoesFiltradas = alteracoes.filter((alt) =>
     alt.descricao.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -79,13 +92,23 @@ export const AlteracoesConfiguracoes = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setAlteracaoSelecionada(alteracao)}
-                    >
-                      Editar
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setAlteracaoSelecionada(alteracao)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => setAlteracaoParaExcluir(alteracao.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -111,6 +134,14 @@ export const AlteracoesConfiguracoes = () => {
           onSaved={() => setAlteracaoSelecionada(null)}
         />
       )}
+
+      {/* Modal de Confirmação de Exclusão */}
+      <ModalConfirmacaoExclusao 
+        isOpen={!!alteracaoParaExcluir}
+        onClose={() => setAlteracaoParaExcluir(null)}
+        onConfirm={handleConfirmarExclusao}
+        isExcluindo={isRemovingAlteracao}
+      />
     </div>
   )
 }
