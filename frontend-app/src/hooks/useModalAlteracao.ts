@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import {
   atualizarAlteracao,
@@ -62,7 +62,7 @@ export const useModalAlteracao = ({
     }
   }
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setDescricao(alteracao?.descricao ?? "")
     setLocalSelecionado(alteracao?.local ?? local)
     setComodoSelecionado(alteracao?.comodo ?? comodo)
@@ -74,7 +74,7 @@ export const useModalAlteracao = ({
     if (fileInputRef.current) {
       fileInputRef.current.value = ""
     }
-  }
+  }, [alteracao, local, comodo])
 
   const handleClose = () => {
     resetForm()

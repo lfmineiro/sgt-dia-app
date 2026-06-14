@@ -1,4 +1,4 @@
-import { AlertTriangle, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { Button } from "../../ui/Button";
 import type { Aviso } from "../../../types/aviso.types";
 
@@ -33,17 +33,6 @@ export const DashboardAvisosPanel = ({ avisos, onAddAviso }: DashboardAvisosPane
         >
           Adicionar Aviso
         </Button>
-      </div>
-
-      <div className="flex items-start gap-4 rounded-2xl bg-amber-50 p-6 border border-amber-200 mb-6">
-        <AlertTriangle className="h-7 w-7 text-amber-600 mt-1 flex-shrink-0" />
-        <div>
-          <p className="text-lg font-semibold text-amber-900 leading-tight">Atenção</p>
-          <p className="text-base text-amber-800">
-            Todos os horários estão sujeitos a alterações. Verifique regularmente este quadro para
-            atualizações.
-          </p>
-        </div>
       </div>
 
       <div className="space-y-4">

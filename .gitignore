@@ -33,3 +33,9 @@ backend-app/.env
 frontend-app/.env
 
 
+backend-app/dados_iniciais.sql
+backend-app/ativas_28.sql
+backend-app/ativas_29.sql
+backend-app/1_ano.sql
+
+backend-app/alteracoes.sql
