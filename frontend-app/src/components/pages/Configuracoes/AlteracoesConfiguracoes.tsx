@@ -4,16 +4,24 @@ import { Button } from '../../ui/Button'
 import { Input } from '../../ui/Input'
 import { ModalAddAlteracao } from '../Alteracoes/ModalAddAlteracao'
 import type { Alteracao } from '../../../types/alterecao.types'
+import { Trash2 } from 'lucide-react'
 
 export const AlteracoesConfiguracoes = () => {
   const {
     alteracoes,
     isLoadingAlteracoes,
     isErrorAlteracoes,
+    removerAlteracao,
   } = useConfiguracoes()
 
   const [alteracaoSelecionada, setAlteracaoSelecionada] = useState<Alteracao | null>(null)
   const [filtro, setFiltro] = useState('')
+
+  const handleExcluir = (id: string) => {
+    if (window.confirm('Tem certeza que deseja excluir esta alteração? Esta ação não pode ser desfeita.')) {
+      removerAlteracao(id)
+    }
+  }
 
   const alteracoesFiltradas = alteracoes.filter((alt) =>
     alt.descricao.toLowerCase().includes(filtro.toLowerCase()) ||
@@ -79,13 +87,23 @@ export const AlteracoesConfiguracoes = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4">
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setAlteracaoSelecionada(alteracao)}
-                    >
-                      Editar
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setAlteracaoSelecionada(alteracao)}
+                      >
+                        Editar
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        onClick={() => handleExcluir(alteracao.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))}
