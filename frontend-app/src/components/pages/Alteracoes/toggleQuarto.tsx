@@ -94,6 +94,7 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
         );
       })}
       <ModalAddAlteracao 
+      key={alteracaoSelecionada?.id ?? `nova-${comodoSelecionado}`}
        isOpen={isModalOpen}
        onClose={fecharModalAlteracao}
        local={setor}
