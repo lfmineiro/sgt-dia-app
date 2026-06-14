@@ -14,6 +14,7 @@ import {
 	atualizarStatusAlteracao,
 	criarAlteracao,
 	listarAlteracoes,
+	deletarAlteracao,
 } from "../services/alteracao.service.js";
 import { uploadAlteracaoImage } from "../lib/cloudinary.js";
 
@@ -141,6 +142,28 @@ export const uploadFotoAlteracao = async (req: Request, res: Response) => {
 		console.error("Erro ao fazer upload da foto da alteração: ", err);
 		return res.status(500).json({
 			error: "Erro interno do servidor ao fazer upload da foto",
+		});
+	}
+};
+
+export const removerAlteracao = async (req: Request, res: Response) => {
+	try {
+		const paramsValidados = alteracaoIdParamSchema.parse(req.params);
+		await deletarAlteracao(paramsValidados.id);
+		return res.status(204).send();
+	} catch (err: unknown) {
+		const zodResponse = handleZodError(res, err);
+		if (zodResponse) return zodResponse;
+
+		if (err instanceof Error && err.message === "ALTERACAO_NAO_ENCONTRADA") {
+			return res.status(404).json({
+				error: "Alteração não encontrada",
+			});
+		}
+
+		console.error("Erro ao remover alteração: ", err);
+		return res.status(500).json({
+			error: "Erro interno do servidor ao remover alteração",
 		});
 	}
 };
