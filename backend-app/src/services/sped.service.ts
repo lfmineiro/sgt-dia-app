@@ -4,6 +4,8 @@ import type { AtualizarSpedInput } from "../schemas/speds.schemas.js"
 import { buscarAlteracoesPorServico } from "./alteracao.service.js"
 import { listarServicoAtualService } from "./servicos.service.js"
 import { INSTALACOES_POR_COMPANHIA, TEXTO_PENDENTES } from "../constants/instalacoes.js"
+import { LOCAL_QUARTEL, SPED_SECOES, VALOR_AUSENTE } from "../constants/sped.js"
+import { funcaoLabel, formatDatePt, postoRank, safeValue } from "../utils/sped.utils.js"
 
 export const obterOuCriarSpedService = async (
   servicoId: string,
@@ -17,7 +19,7 @@ export const obterOuCriarSpedService = async (
     return spedExistente
   }
 
-  const novoSped = await prisma.sped.create({
+  return await prisma.sped.create({
     data: {
       servicoId,
       companhia,
@@ -25,8 +27,6 @@ export const obterOuCriarSpedService = async (
       passagem: "",
     },
   })
-
-  return novoSped
 }
 
 export const atualizarSpedService = async (
@@ -35,12 +35,7 @@ export const atualizarSpedService = async (
   dados: AtualizarSpedInput,
 ) => {
   const spedExistente = await prisma.sped.findUnique({
-    where: {
-      servicoId_companhia: {
-        servicoId,
-        companhia,
-      },
-    },
+    where: { servicoId_companhia: { servicoId, companhia } },
   })
 
   if (!spedExistente) {
@@ -48,12 +43,7 @@ export const atualizarSpedService = async (
   }
 
   return await prisma.sped.update({
-    where: {
-      servicoId_companhia: {
-        servicoId,
-        companhia,
-      },
-    },
+    where: { servicoId_companhia: { servicoId, companhia } },
     data: dados,
   })
 }
@@ -79,31 +69,6 @@ export const gerarTextoAlunosService = async (
   })
 
   if (!servico) throw new Error("SERVICO_NAO_ENCONTRADO")
-
-  const funcaoLabel = (funcao: string) => {
-    switch (funcao) {
-      case "SGT_DIA":
-        return "Sgt de dia"
-      case "CB_DIA":
-        return "Cb de dia"
-      case "PLANTAO":
-        return "Plantões"
-      case "PERMANENCIA":
-        return "Permanência"
-      default:
-        return funcao
-    }
-  }
-
-  const postoRank = (postoRaw?: string) => {
-    if (!postoRaw) return 4
-    const s = postoRaw.toLowerCase()
-    if (s.includes("3")) return 0
-    if (s.includes("4")) return 1
-    if (s.includes("5")) return 2
-    if (s.includes("aloj") && s.includes("fem")) return 3
-    return 4
-  }
 
   const militares = servico.membrosGuarnicao
     .map((m) => {
@@ -160,10 +125,9 @@ export const gerarTextoInstalacoesService = async (
 
   const groups = new Map<string, Array<{ descricao: string; status: string }>>()
   for (const a of alteracoes) {
-    const key = a.local
-    const lista = groups.get(key) ?? []
+    const lista = groups.get(a.local) ?? []
     lista.push({ descricao: a.descricao, status: a.status })
-    groups.set(key, lista)
+    groups.set(a.local, lista)
   }
 
   if (mapa.length === 0) return ""
@@ -173,118 +137,72 @@ export const gerarTextoInstalacoesService = async (
     const entry = mapa[i]
     if (!entry) continue
     const { local, label } = entry
-    const letra = String.fromCharCode(97 + i) // a, b, c...
+    const letra = String.fromCharCode(97 + i)
     const itens = groups.get(local) ?? []
 
     const novas = itens.filter((x) => x.status === "NOVA").map((x) => x.descricao)
     const resolvidas = itens.filter((x) => x.status === "RESOLVIDA").map((x) => x.descricao)
 
-    const novasText = novas.length > 0 ? novas.join("; ") : "S/A"
-    const pendentesText = TEXTO_PENDENTES
-    const resolvidasText = resolvidas.length > 0 ? resolvidas.join("; ") : "S/A"
+    const novasText = novas.length > 0 ? novas.join("; ") : VALOR_AUSENTE
+    const resolvidasText = resolvidas.length > 0 ? resolvidas.join("; ") : VALOR_AUSENTE
 
     lines.push(`${letra}. ${label}:`)
     lines.push(`1) Novas: ${novasText};`)
-    lines.push(`2) Pendentes: ${pendentesText};`)
+    lines.push(`2) Pendentes: ${TEXTO_PENDENTES};`)
     lines.push(`3) Resolvidas: ${resolvidasText}.`)
     lines.push("")
   }
 
-  // remove last blank line
   if (lines[lines.length - 1] === "") lines.pop()
 
   return lines.join("\n")
 }
 
-const formatDatePt = (d?: Date | string | null) => {
-  if (!d) return ""
-  const date = d instanceof Date ? d : new Date(d)
-  const months = [
-    "janeiro",
-    "fevereiro",
-    "março",
-    "abril",
-    "maio",
-    "junho",
-    "julho",
-    "agosto",
-    "setembro",
-    "outubro",
-    "novembro",
-    "dezembro",
-  ]
-  const day = date.getDate()
-  const month = months[date.getMonth()] || ""
-  const year = date.getFullYear()
-  return `${day} de ${month} de ${year}`
-}
-
 export const gerarTextoRodapeService = async (): Promise<string> => {
   const sgt = await listarServicoAtualService()
-  if (!sgt) return "S/A"
+  if (!sgt) return VALOR_AUSENTE
 
-  const local = "Quartel da Praia Vermelha"
   const dataStr = formatDatePt(sgt.dataServico)
-
   const ano = calcularAnoAluno(sgt.anoFormatura)
   const aluPart = ano ? `ALU ${ordinal(ano)} Ano ${sgt.nomeCompleto}` : `ALU ${sgt.nomeCompleto}`
 
-  const linha1 = `${local}, ${dataStr}`
-  const linha2 = aluPart.toUpperCase()
-
-  return `${linha1}\n${linha2}`
+  return `${LOCAL_QUARTEL}, ${dataStr}\n${aluPart.toUpperCase()}`
 }
 
 export const gerarTextoSpedCompletoService = async (
   servicoId: string,
   companhia: number,
 ): Promise<string> => {
-  const sped = await prisma.sped.findUnique({
-    where: { servicoId_companhia: { servicoId, companhia } },
-  }) ?? await obterOuCriarSpedService(servicoId, companhia)
-
-  const safe = (v?: string | null) => (v && v.trim() !== "" ? v : "S/A")
-
-  const item1 = `**1. Recebimento do Serviço:** ${safe(sped.recebimento)}`
+  const sped =
+    (await prisma.sped.findUnique({
+      where: { servicoId_companhia: { servicoId, companhia } },
+    })) ?? (await obterOuCriarSpedService(servicoId, companhia))
 
   const alunosTexto = await gerarTextoAlunosService(servicoId, companhia)
-  const item2 = alunosTexto ? `**2. Militares de serviço:**\n${alunosTexto}` : `**2. Militares de serviço:** S/A`
-
-  const item3 = `**3. Armamento:** ${safe(sped.armamento)}`
-  const item4 = `**4. Punidos:** ${safe(sped.punidos)}`
-  const item5 = `**5. Material carga:** ${safe(sped.materialCarga)}`
-  const item6 = `**6. Visita médica fora do horário de expediente:** ${safe(sped.visitaMedica)}`
-  const item7 = `**7. Alunos com dispensa:** ${safe(sped.alunosDispensa)}`
-  const item8 = `**8. Refeições:** ${safe(sped.refeicoes)}`
-  const item9 = `**9. Ronda:** ${safe(sped.ronda)}`
-  const item10 = `**10. Revista do Recolher:** ${safe(sped.revistaRecolher)}`
-
   const instalacoesTexto = await gerarTextoInstalacoesService(servicoId, companhia)
-  const item11 = instalacoesTexto ? `**11. Instalações:**\n${instalacoesTexto}` : `**11. Instalações:** S/A`
-
-  const item12 = `**12. Ocorrências:** ${safe(sped.ocorrencias)}`
-  const item13 = `**13. Passagem de serviço:** ${safe(sped.passagem)}`
-
   const rodapeTexto = await gerarTextoRodapeService()
+
   const parts = [
-    item1,
-    item2,
-    item3,
-    item4,
-    item5,
-    item6,
-    item7,
-    item8,
-    item9,
-    item10,
-    item11,
-    item12,
-    item13,
+    `**${SPED_SECOES.RECEBIMENTO}:** ${safeValue(sped.recebimento)}`,
+    alunosTexto
+      ? `**${SPED_SECOES.MILITARES}:**\n${alunosTexto}`
+      : `**${SPED_SECOES.MILITARES}:** ${VALOR_AUSENTE}`,
+    `**${SPED_SECOES.ARMAMENTO}:** ${safeValue(sped.armamento)}`,
+    `**${SPED_SECOES.PUNIDOS}:** ${safeValue(sped.punidos)}`,
+    `**${SPED_SECOES.MATERIAL_CARGA}:** ${safeValue(sped.materialCarga)}`,
+    `**${SPED_SECOES.VISITA_MEDICA}:** ${safeValue(sped.visitaMedica)}`,
+    `**${SPED_SECOES.ALUNOS_DISPENSA}:** ${safeValue(sped.alunosDispensa)}`,
+    `**${SPED_SECOES.REFEICOES}:** ${safeValue(sped.refeicoes)}`,
+    `**${SPED_SECOES.RONDA}:** ${safeValue(sped.ronda)}`,
+    `**${SPED_SECOES.REVISTA_RECOLHER}:** ${safeValue(sped.revistaRecolher)}`,
+    instalacoesTexto
+      ? `**${SPED_SECOES.INSTALACOES}:**\n${instalacoesTexto}`
+      : `**${SPED_SECOES.INSTALACOES}:** ${VALOR_AUSENTE}`,
+    `**${SPED_SECOES.OCORRENCIAS}:** ${safeValue(sped.ocorrencias)}`,
+    `**${SPED_SECOES.PASSAGEM}:** ${safeValue(sped.passagem)}`,
   ].filter(Boolean)
 
   if (rodapeTexto) parts.push(rodapeTexto)
 
   return parts.join("\n\n")
 }
-
-
