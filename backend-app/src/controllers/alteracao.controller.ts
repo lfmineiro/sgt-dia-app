@@ -36,7 +36,7 @@ const responderAtualizacaoDaAlteracao = async (
 	req: Request,
 	res: Response,
 	schema: SchemaComParse,
-	atualizar: (id: string, dados: any) => Promise<unknown>,
+	atualizar: (id: string, dados: unknown) => Promise<unknown>,
 	errorLog: string,
 	errorResposta: string,
 ) => {

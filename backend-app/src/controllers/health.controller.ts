@@ -28,7 +28,7 @@ export const getStatus = async (req: Request, res: Response) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     dbStatus = 'connected'
-  } catch (err) {
+  } catch {
     console.error("Erro na conexão com o banco")
     dbStatus = 'error'
   }

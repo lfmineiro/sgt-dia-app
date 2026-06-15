@@ -24,8 +24,10 @@ export const AlunoAutocomplete = ({
   useEffect(() => {
     const selected = alunos.find(a => a.numero === value)
     if (selected) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchTerm(`${selected.nomeGuerra} (${selected.numero})`)
     } else if (value === 0) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSearchTerm("")
     }
   }, [value, alunos])

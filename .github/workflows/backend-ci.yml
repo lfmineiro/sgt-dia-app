@@ -45,3 +45,8 @@ jobs:
         run: |
           cd backend-app
           npx tsc --noEmit
+
+      - name: Lint e Complexidade Ciclomática
+        run: |
+          cd backend-app
+          npm run lint

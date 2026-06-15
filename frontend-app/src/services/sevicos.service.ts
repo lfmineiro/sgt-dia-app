@@ -46,7 +46,7 @@ export const fetchServicos = async () => {
 
 export const atualizarServico = async (
   servicoId: string,
-  data: any
+  data: Record<string, unknown>
 ) => {
   try {
     const response = await api.patch(`/servicos/${servicoId}`, data);
