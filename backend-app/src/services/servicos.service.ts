@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { FuncaoMembroGuarnicao } from "@prisma/client";
-import type { CriarServicoBody, ServicoAtualSgtDiaDTO } from "../schemas/servicos.schema.js";
+import type { CriarServicoBody, ServicoAtualSgtDiaDTO, AtualizarServicoInput } from "../schemas/servicos.schema.js";
 
 export const criarNovoServico = async (input: CriarServicoBody ) => {
   const servicoCriado = await prisma.$transaction(async (tx) => {
@@ -22,7 +22,7 @@ export const criarNovoServico = async (input: CriarServicoBody ) => {
           data: {
             data: input.data,
             membrosGuarnicao: {
-              create: input.membros.map((m) => ({
+              create: input.membros.map((m: { alunoNumero: number; funcao: FuncaoMembroGuarnicao }) => ({
                 alunoNumero: m.alunoNumero,
                 funcao: m.funcao,
               })),
@@ -105,9 +105,9 @@ export const atualizarServicoService = async (
         where: { id: servicoId },
         data: {
           membrosGuarnicao: {
-            create: membros.map((m) => ({
+            create: membros.map((m: { alunoNumero: number; funcao: string }) => ({
               alunoNumero: m.alunoNumero,
-              funcao: m.funcao,
+              funcao: m.funcao as FuncaoMembroGuarnicao,
             })),
           },
         },
