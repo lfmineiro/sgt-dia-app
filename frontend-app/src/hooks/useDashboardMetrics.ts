@@ -30,7 +30,7 @@ const tonePorSetor: Record<string, DashboardStat["tone"]> = {
 
 export const useDashboardMetrics = (alteracoes: Alteracao[]) => {
   const activities = useMemo<DashboardActivity[]>(() => {
-    return alteracoes.slice(0, 5).map((alteracao) => ({
+    return alteracoes.slice(0, 3).map((alteracao) => ({
       id: alteracao.id,
       title: tituloAtividadePorStatus[alteracao.status],
       description: `${LABEL_SETOR[alteracao.local]} • ${getLabelComodo(alteracao.comodo)}`,

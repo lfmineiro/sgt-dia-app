@@ -46,7 +46,7 @@ export const useConfiguracoes = () => {
 
   const atualizarServicoMutacao = useMutation({
     mutationFn: async (dados: { id: string; status: 'EM_ANDAMENTO' | 'FECHADO' }) => {
-      return await atualizarServico(dados.id, dados.status)
+      return await atualizarServico(dados.id, { status: dados.status })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['servicosConfiguracao'] })

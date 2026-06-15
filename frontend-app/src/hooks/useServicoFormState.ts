@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { MembroServicoForm } from "../types/servicoForm.types"
 
 const MEMBROS_INICIAIS: MembroServicoForm[] = [
@@ -7,9 +7,28 @@ const MEMBROS_INICIAIS: MembroServicoForm[] = [
   { alunoNumero: 0, funcao: "PLANTAO" },
 ]
 
-export const useServicoFormState = () => {
+interface InitialServico {
+  data: string
+  membrosGuarnicao?: MembroServicoForm[]
+}
+
+export const useServicoFormState = (initialServico?: InitialServico | null) => {
   const [dataServico, setDataServico] = useState(new Date().toISOString().split("T")[0])
   const [membros, setMembros] = useState<MembroServicoForm[]>(MEMBROS_INICIAIS)
+
+  useEffect(() => {
+    if (initialServico) {
+      if (initialServico.data) {
+        setDataServico(new Date(initialServico.data).toISOString().split("T")[0])
+      }
+      if (initialServico.membrosGuarnicao && initialServico.membrosGuarnicao.length > 0) {
+        setMembros(initialServico.membrosGuarnicao.map(m => ({
+          alunoNumero: m.alunoNumero,
+          funcao: m.funcao
+        })))
+      }
+    }
+  }, [initialServico])
 
   const adicionarMembro = () => setMembros([...membros, { alunoNumero: 0, funcao: "" }])
 

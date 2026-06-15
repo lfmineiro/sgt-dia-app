@@ -8,7 +8,7 @@ interface Servico {
   id: string
   data: string
   status: 'EM_ANDAMENTO' | 'FECHADO'
-  membros?: { alunoNumero: number; funcao: string }[]
+  membrosGuarnicao?: { alunoNumero: number; funcao: string }[]
 }
 
 export const ServicosConfiguracoes = () => {

@@ -46,10 +46,10 @@ export const fetchServicos = async () => {
 
 export const atualizarServico = async (
   servicoId: string,
-  status: 'EM_ANDAMENTO' | 'FECHADO'
+  data: any
 ) => {
   try {
-    const response = await api.patch(`/servicos/${servicoId}`, { status });
+    const response = await api.patch(`/servicos/${servicoId}`, data);
     return response.data;
   } catch (error) {
     console.error("Erro ao atualizar serviço:", error);
