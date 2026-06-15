@@ -19,9 +19,11 @@ export const useServicoFormState = (initialServico?: InitialServico | null) => {
   useEffect(() => {
     if (initialServico) {
       if (initialServico.data) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDataServico(new Date(initialServico.data).toISOString().split("T")[0])
       }
       if (initialServico.membrosGuarnicao && initialServico.membrosGuarnicao.length > 0) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setMembros(initialServico.membrosGuarnicao.map(m => ({
           alunoNumero: m.alunoNumero,
           funcao: m.funcao

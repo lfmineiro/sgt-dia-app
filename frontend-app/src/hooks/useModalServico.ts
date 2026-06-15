@@ -4,7 +4,13 @@ import { criarNovoServico, atualizarServico } from "../services/sevicos.service"
 import { SARGENTO_DIA_ATUAL_QUERY_KEY } from "./useSargentoDiaAtual";
 import { useServicoFormState } from "./useServicoFormState";
 
-export const useModalServico = (onClose: () => void, initialServico?: any) => {
+interface ServicoParaEdicao {
+  id: string
+  data: string
+  membrosGuarnicao?: { alunoNumero: number; funcao: string }[]
+}
+
+export const useModalServico = (onClose: () => void, initialServico?: ServicoParaEdicao | null) => {
   const queryClient = useQueryClient()
   const isEdicao = Boolean(initialServico)
 
@@ -32,7 +38,7 @@ export const useModalServico = (onClose: () => void, initialServico?: any) => {
   })
 
   const updateMutation = useMutation({
-    mutationFn: (payload: { id: string, data: any }) => atualizarServico(payload.id, payload.data),
+    mutationFn: (payload: { id: string, data: Record<string, unknown> }) => atualizarServico(payload.id, payload.data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: SARGENTO_DIA_ATUAL_QUERY_KEY })
       queryClient.invalidateQueries({ queryKey: ['servicosConfiguracao'] })

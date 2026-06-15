@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { Prisma, StatusAlteracao } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { ZodError } from "zod";
 import { CriarServicoSchema, servicoIdParamSchema, atualizarServicoSchema } from "../schemas/servicos.schema.js";
 import { criarNovoServico, listarServicoAtualService, listarServicosService, atualizarServicoService } from "../services/servicos.service.js";

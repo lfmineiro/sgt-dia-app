@@ -34,7 +34,35 @@ jobs:
           cd frontend-app
           npx tsc --noEmit
 
+      - name: Lint e Complexidade Ciclomática
+        run: |
+          cd frontend-app
+          npm run lint
+
+      - name: Cobertura de Testes
+        run: |
+          cd frontend-app
+          npm run test:coverage
+
+      - name: Upload Relatório de Cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend-app/coverage/
+          if-no-files-found: ignore
+
       - name: Testar Build de Produção (Vite)
         run: |
           cd frontend-app
           npm run build
+
+      - name: Verificar Tamanho do Bundle
+        run: |
+          cd frontend-app
+          BUNDLE_SIZE=$(find dist/assets -name "*.js" -type f -exec cat {} \; | wc -c)
+          echo "Bundle JS total: ${BUNDLE_SIZE} bytes (limite: 1048576)"
+          if [ "$BUNDLE_SIZE" -gt 1048576 ]; then
+            echo "❌ Bundle JS excede 1MB (atual: ${BUNDLE_SIZE} bytes)"
+            exit 1
+          fi
+          echo "✅ Bundle dentro do limite"

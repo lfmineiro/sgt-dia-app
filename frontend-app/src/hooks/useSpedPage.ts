@@ -175,7 +175,7 @@ export const useSpedPage = () => {
       // refetch current sped
       try {
         await spedQuery.refetch();
-      } catch (e) {
+      } catch {
         // ignore
       }
     } catch (error) {
