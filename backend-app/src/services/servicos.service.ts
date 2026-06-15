@@ -39,6 +39,9 @@ export const criarNovoServico = async (input: CriarServicoBody ) => {
 
 export const listarServicosService = async () => {
   const servicos = await prisma.servico.findMany({
+    include: {
+      membrosGuarnicao: true
+    },
     orderBy: {
       data: 'desc'
     }
@@ -86,12 +89,43 @@ export const listarServicoAtualService = async () => {
 
 export const atualizarServicoService = async (
   servicoId: string,
-  status: 'EM_ANDAMENTO' | 'FECHADO'
+  dados: AtualizarServicoInput
 ) => {
-  const servicoAtualizado = await prisma.servico.update({
-    where: { id: servicoId },
-    data: { status },
-  })
+  const { status, data, membros } = dados
 
-  return servicoAtualizado
+  return await prisma.$transaction(async (tx) => {
+    if (membros) {
+      // Remover membros antigos
+      await tx.membroGuarnicao.deleteMany({
+        where: { servicoId }
+      })
+
+      // Adicionar novos membros
+      await tx.servico.update({
+        where: { id: servicoId },
+        data: {
+          membrosGuarnicao: {
+            create: membros.map((m) => ({
+              alunoNumero: m.alunoNumero,
+              funcao: m.funcao,
+            })),
+          },
+        },
+      })
+    }
+
+    // Atualizar outros campos
+    const servicoAtualizado = await tx.servico.update({
+      where: { id: servicoId },
+      data: {
+        ...(status ? { status } : {}),
+        ...(data ? { data } : {}),
+      },
+      include: {
+        membrosGuarnicao: true
+      }
+    })
+
+    return servicoAtualizado
+  })
 }

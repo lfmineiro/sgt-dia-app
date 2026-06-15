@@ -38,7 +38,9 @@ export const servicoIdParamSchema = z.object({
 });
 
 export const atualizarServicoSchema = z.object({
-  status: z.enum(StatusServico),
+  status: z.enum(StatusServico).optional(),
+  data: dataServicoSchema.optional(),
+  membros: membrosServicoSchema.optional(),
 });
 
 export type AtualizarServicoInput = z.infer<typeof atualizarServicoSchema>

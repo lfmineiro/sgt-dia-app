@@ -68,7 +68,7 @@ export const atualizarServico = async (req: Request, res: Response) => {
     const { id } = servicoIdParamSchema.parse(req.params);
     const dadosValidados = atualizarServicoSchema.parse(req.body);
 
-    const servicoAtualizado = await atualizarServicoService(id, dadosValidados.status);
+    const servicoAtualizado = await atualizarServicoService(id, dadosValidados);
 
     return res.status(200).json(servicoAtualizado);
   } catch (err: unknown) {
