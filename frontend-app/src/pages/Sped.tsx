@@ -23,6 +23,7 @@ export const SpedPage = () => {
     servicoId,
     toggleSection,
     generatedTexto,
+    aplicarTemplate,
   } = useSpedPage();
 
   return (
@@ -65,6 +66,7 @@ export const SpedPage = () => {
           openSection={openSection}
           onToggleSection={toggleSection}
           onChange={handleChange}
+          onQuickFill={aplicarTemplate}
         />
         {generatedTexto && (
           <div className="rounded-md border border-gray-200 bg-white p-6">

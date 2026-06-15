@@ -5,9 +5,10 @@ interface SpedTextAreaFieldProps {
   id: string;
   value: string;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onQuickFill?: () => void;
 }
 
-export const SpedTextAreaField = ({ label, id, value, onChange }: SpedTextAreaFieldProps) => {
+export const SpedTextAreaField = ({ label, id, value, onChange, onQuickFill }: SpedTextAreaFieldProps) => {
   return (
     <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm font-medium text-gray-700">
@@ -22,6 +23,15 @@ export const SpedTextAreaField = ({ label, id, value, onChange }: SpedTextAreaFi
         placeholder="S/A"
         className="w-full resize-y rounded-md border border-gray-300 p-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
       />
+      {onQuickFill && (
+        <button
+          type="button"
+          onClick={onQuickFill}
+          className="self-start rounded border border-blue-300 bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700 transition-colors hover:bg-blue-100"
+        >
+          Usar texto padrão
+        </button>
+      )}
     </div>
   );
 };

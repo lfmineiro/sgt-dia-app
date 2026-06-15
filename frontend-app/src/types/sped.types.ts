@@ -17,6 +17,7 @@ export interface SpedFormState {
 export interface SpedSectionField {
   id: keyof SpedFormState;
   label: string;
+  hasQuickFill?: boolean;
 }
 
 export interface SpedSectionDefinition {

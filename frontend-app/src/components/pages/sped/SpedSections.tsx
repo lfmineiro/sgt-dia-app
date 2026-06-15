@@ -9,9 +9,10 @@ interface SpedSectionsProps {
   openSection: string | null;
   onToggleSection: (section: string) => void;
   onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+  onQuickFill?: (field: keyof SpedFormState) => void;
 }
 
-export const SpedSections = ({ formData, openSection, onToggleSection, onChange }: SpedSectionsProps) => {
+export const SpedSections = ({ formData, openSection, onToggleSection, onChange, onQuickFill }: SpedSectionsProps) => {
   return (
     <div className="mt-2 flex flex-col gap-4">
       {SPED_SECTIONS.map((section) => (
@@ -28,6 +29,7 @@ export const SpedSections = ({ formData, openSection, onToggleSection, onChange 
               label={field.label}
               value={formData[field.id]}
               onChange={onChange}
+              onQuickFill={field.hasQuickFill && onQuickFill ? () => onQuickFill(field.id) : undefined}
             />
           ))}
         </SpedAccordion>
