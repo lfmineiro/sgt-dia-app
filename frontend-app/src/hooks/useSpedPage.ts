@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSargentoDiaAtual } from './useSargentoDiaAtual';
 import { atualizarSped, obterSped, obterTextoSped } from '../services/sped.service';
-import { INITIAL_SPED_FORM_STATE } from '../constants/sped';
+import { INITIAL_SPED_FORM_STATE, SPED_QUICK_FILL_TEMPLATES } from '../constants/sped';
 import type { SpedCompany, SpedFormState, SpedMessage } from '../types/sped.types';
 
 const SPED_QUERY_KEY = ['sped'];
@@ -216,6 +216,14 @@ export const useSpedPage = () => {
     setOpenSection((current) => (current === section ? null : section));
   };
 
+  const aplicarTemplate = (field: keyof SpedFormState) => {
+    const templateFn = SPED_QUICK_FILL_TEMPLATES[field];
+    if (!templateFn) return;
+    const nome = sgtDia?.nomeCompleto ?? '';
+    const texto = templateFn(nome, dataServicoFormatada);
+    setFormData((prev) => ({ ...prev, [field]: texto }));
+  };
+
   return {
     companhia,
     companhiaLabel,
@@ -234,5 +242,6 @@ export const useSpedPage = () => {
     generatedTexto,
     handleSave,
     handleGenerate,
+    aplicarTemplate,
   };
 };
