@@ -27,6 +27,9 @@ export const useAlteracoesPage = () => {
     (alteracao: Alteracao) => alteracao.local === setorAtivo,
   )
 
+  const alteracoesPendentesSetorAtivo = alteracoesSetorAtivo.filter(
+    (alteracao: Alteracao) => alteracao.status !== 'RESOLVIDA',
+  )
 
   return {
     setorAtivo,
@@ -35,6 +38,7 @@ export const useAlteracoesPage = () => {
     abaAtiva,
     comodosSetorAtivo,
     alteracoesSetorAtivo,
+    alteracoesPendentesSetorAtivo,
     isLoading,
     isError,
   }

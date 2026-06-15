@@ -12,7 +12,7 @@ export const AlteracoesPage = () => {
   const {
     setorAtivo, setSetorAtivo,
     listaAlteracoes, abaAtiva, comodosSetorAtivo, alteracoesSetorAtivo,
-    isLoading, isError
+    alteracoesPendentesSetorAtivo, isLoading, isError
   } = useAlteracoesPage()
 
   return (
@@ -34,7 +34,7 @@ export const AlteracoesPage = () => {
 
         {!isLoading && !isError && (
           <>
-            <p>Total de alterações no setor: {alteracoesSetorAtivo.length}</p>
+            <p>Total de alterações no setor: {alteracoesPendentesSetorAtivo.length}</p>
 
             <ToggleQuarto
               comodos={comodosSetorAtivo}
