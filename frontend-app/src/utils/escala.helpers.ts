@@ -5,9 +5,11 @@ import type {
   InlineDraft,
   MembroEscalaOption,
 } from '../types/escala.types';
+import { POSTOS_ORDENADOS } from '../constants/setor-local';
+import type { SetorLocal } from '../constants/setor-local';
 import { TOTAL_TURNOS_ESCALA } from './turno';
 
-export const POSTOS_INICIAIS = ['Ala 5o Piso', '4o Piso', '3o Piso', 'SegFem'];
+export const POSTOS_INICIAIS: SetorLocal[] = POSTOS_ORDENADOS;
 
 export const criarAlocacoesIniciais = (): AlocacaoFormRow[] => {
   return Array.from({ length: TOTAL_TURNOS_ESCALA }, () => criarAlocacaoVazia());
@@ -65,13 +67,13 @@ export const criarInlineDrafts = (linhas: EscalaLinha[]): Record<string, InlineD
 };
 
 export const montarPayloadConfiguracao = (
-  posto: string,
+  posto: SetorLocal,
   alocacoes: AlocacaoFormRow[],
   inicioPrimeiroHorario?: string,
   fimTerceiroHorario?: string,
 ): ConfigurarEscalaPayload => {
   return {
-    posto: posto.trim(),
+    posto,
     inicioPrimeiroHorario: inicioPrimeiroHorario?.trim() || undefined,
     fimTerceiroHorario: fimTerceiroHorario?.trim() || undefined,
     alocacoes: alocacoes.map((alocacao, index) => ({

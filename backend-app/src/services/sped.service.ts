@@ -4,7 +4,7 @@ import type { AtualizarSpedInput } from "../schemas/speds.schemas.js"
 import { buscarAlteracoesPorServico } from "./alteracao.service.js"
 import { listarServicoAtualService } from "./servicos.service.js"
 import { INSTALACOES_POR_COMPANHIA, TEXTO_PENDENTES } from "../constants/instalacoes.js"
-import { LOCAL_QUARTEL, SPED_SECOES, VALOR_AUSENTE } from "../constants/sped.js"
+import { LOCAL_QUARTEL, SETOR_LOCAL_LABELS, SPED_SECOES, VALOR_AUSENTE } from "../constants/sped.js"
 import { funcaoLabel, formatDatePt, postoRank, safeValue } from "../utils/sped.utils.js"
 
 export const obterOuCriarSpedService = async (
@@ -85,7 +85,7 @@ export const gerarTextoAlunosService = async (
     if (!ano) continue
     const func = funcaoLabel(membro.funcao)
     const postoRaw = membro.escalas?.[0]?.posto
-    const postoDisplay = postoRaw ?? "Sem posto"
+    const postoDisplay = postoRaw ? (SETOR_LOCAL_LABELS[postoRaw] ?? postoRaw) : "Sem posto"
     const key = `${func} ${postoDisplay}`
     const lista = groups.get(key) ?? []
     const item: { nome: string; ano: number; curso?: string } = { nome: membro.aluno.nomeGuerra, ano }

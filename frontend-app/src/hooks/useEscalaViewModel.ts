@@ -23,6 +23,7 @@ import {
   montarPayloadConfiguracao,
   POSTOS_INICIAIS,
 } from '../utils/escala.helpers';
+import type { SetorLocal } from '../constants/setor-local';
 import { gerarPdfEscala } from '../utils/escalaPdf';
 import {
   FIM_TERCEIRO_HORARIO_PADRAO,
@@ -32,9 +33,9 @@ import {
 
 export const useEscalaViewModel = () => {
   const queryClient = useQueryClient();
-  const [postoAtivo, setPostoAtivo] = useState<string>(POSTOS_INICIAIS[0]);
+  const [postoAtivo, setPostoAtivo] = useState<SetorLocal>(POSTOS_INICIAIS[0]);
   const [modalAberto, setModalAberto] = useState(false);
-  const [postoModal, setPostoModal] = useState<string>(POSTOS_INICIAIS[0]);
+  const [postoModal, setPostoModal] = useState<SetorLocal>(POSTOS_INICIAIS[0]);
   const [erroModal, setErroModal] = useState<string | null>(null);
   const [alocacoes, setAlocacoes] = useState<AlocacaoFormRow[]>(criarAlocacoesIniciais);
   const [inicioPrimeiroHorario, setInicioPrimeiroHorario] = useState<string>(
@@ -66,7 +67,7 @@ export const useEscalaViewModel = () => {
   });
 
   const postos = useMemo(() => {
-    const lista = new Set<string>(POSTOS_INICIAIS);
+    const lista = new Set<SetorLocal>(POSTOS_INICIAIS);
     (escalasQuery.data ?? []).forEach((linha) => lista.add(linha.posto));
     lista.add(postoModal);
     return [...lista];
@@ -151,11 +152,6 @@ export const useEscalaViewModel = () => {
   };
 
   const salvarConfiguracao = () => {
-    if (!postoModal.trim()) {
-      setErroModal('Selecione um posto antes de salvar.');
-      return;
-    }
-
     if (alocacoes.length === 0) {
       setErroModal('Adicione pelo menos uma alocacao.');
       return;

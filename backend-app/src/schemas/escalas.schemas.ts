@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { SetorLocal } from "@prisma/client";
 
 type DefinedPartial<T> = {
   [K in keyof T]?: Exclude<T[K], undefined>;
@@ -46,7 +47,7 @@ const membroGuarnicaoOpcionalSchema = z.preprocess(
 );
 
 export const configurarEscalaSchema = z.object({
-  posto: z.string().trim().min(1, "Informe o posto"),
+  posto: z.nativeEnum(SetorLocal),
   inicioPrimeiroHorario: horarioOpcionalSchema,
   fimTerceiroHorario: horarioOpcionalSchema,
   alocacoes: z
@@ -84,7 +85,7 @@ export const escalaIdParamSchema = z.object({
 });
 
 export const postoParamSchema = z.object({
-  posto: z.string().trim().min(1, "Informe o posto"),
+  posto: z.nativeEnum(SetorLocal),
 });
 
 export const listarEscalasPorPostoQuerySchema = z.object({

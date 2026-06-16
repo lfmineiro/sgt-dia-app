@@ -1,7 +1,10 @@
+import type { SetorLocal } from '../../../constants/setor-local';
+import { SETOR_LOCAL_LABELS } from '../../../constants/setor-local';
+
 interface PostoTabsProps {
-  postos: string[];
-  activePosto: string;
-  onSelect: (posto: string) => void;
+  postos: SetorLocal[];
+  activePosto: SetorLocal;
+  onSelect: (posto: SetorLocal) => void;
   className?: string;
 }
 
@@ -28,7 +31,7 @@ export const PostoTabs = ({
                   : 'border-transparent text-slate-500 hover:text-slate-700'
               }`}
             >
-              {posto}
+              {SETOR_LOCAL_LABELS[posto]}
             </button>
           );
         })}

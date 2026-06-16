@@ -22,6 +22,13 @@ export const MESES_PT = [
 
 export const LOCAL_QUARTEL = "Quartel da Praia Vermelha"
 
+export const SETOR_LOCAL_LABELS: Record<string, string> = {
+  ALA_5_PISO: "Ala 5° Piso",
+  ALA_4_PISO: "4° Piso",
+  ALA_3_PISO: "3° Piso",
+  SEG_FEM: "Seg Fem",
+}
+
 export const VALOR_AUSENTE = "S/A"
 
 export const SPED_SECOES = {

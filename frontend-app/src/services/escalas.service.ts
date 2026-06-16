@@ -1,4 +1,5 @@
 import { api } from './api';
+import type { SetorLocal } from '../constants/setor-local';
 import type {
   AtualizarEscalaPayload,
   BuscarMembrosEscalaParams,
@@ -23,7 +24,7 @@ export const configurarPostoEscalaService = async (
 };
 
 export const listarEscalasPorPostoService = async (
-  posto: string,
+  posto: SetorLocal,
 ): Promise<EscalaLinha[]> => {
   const response = await api.get(`/escalas/${encodeURIComponent(posto)}`);
   return response.data;

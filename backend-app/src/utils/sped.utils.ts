@@ -4,13 +4,13 @@ export const funcaoLabel = (funcao: string): string =>
   FUNCAO_LABELS[funcao] ?? funcao
 
 export const postoRank = (postoRaw?: string): number => {
-  if (!postoRaw) return 4
-  const s = postoRaw.toLowerCase()
-  if (s.includes("3")) return 0
-  if (s.includes("4")) return 1
-  if (s.includes("5")) return 2
-  if (s.includes("aloj") && s.includes("fem")) return 3
-  return 4
+  switch (postoRaw) {
+    case "ALA_3_PISO": return 0
+    case "ALA_4_PISO": return 1
+    case "ALA_5_PISO": return 2
+    case "SEG_FEM":    return 3
+    default:           return 4
+  }
 }
 
 export const formatDatePt = (d?: Date | string | null): string => {
