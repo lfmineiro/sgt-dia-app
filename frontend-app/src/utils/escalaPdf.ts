@@ -1,10 +1,12 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import type { EscalaLinha } from '../types/escala.types';
+import type { SetorLocal } from '../constants/setor-local';
+import { SETOR_LOCAL_LABELS } from '../constants/setor-local';
 import { gerarIntervaloPorTurno } from './turno';
 
 interface GerarPdfEscalaParams {
-  posto: string;
+  posto: SetorLocal;
   dataExtenso: string;
   linhas: EscalaLinha[];
 }
@@ -96,7 +98,7 @@ export const gerarPdfEscala = ({ posto, dataExtenso, linhas }: GerarPdfEscalaPar
 
   doc.setFontSize(11);
   doc.setTextColor(71, 85, 105);
-  doc.text(`Posto: ${posto}`, 40, 74);
+  doc.text(`Posto: ${SETOR_LOCAL_LABELS[posto]}`, 40, 74);
   doc.text(`Data: ${dataExtenso}`, 40, 92);
 
   const linhasTabela = montarLinhasTabelaPorHorario(linhas);
@@ -131,5 +133,5 @@ export const gerarPdfEscala = ({ posto, dataExtenso, linhas }: GerarPdfEscalaPar
     },
   });
 
-  doc.save(nomeArquivoSeguro(posto));
+  doc.save(nomeArquivoSeguro(SETOR_LOCAL_LABELS[posto]));
 };

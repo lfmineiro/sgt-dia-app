@@ -74,9 +74,9 @@ model MembroGuarnicao {
 }
 
 model Escala {
-  id                String @id @default(uuid())
+  id                String     @id @default(uuid())
   membroGuarnicaoId String
-  posto             String
+  posto             SetorLocal
   turno             Int
   inicioPrimeiroHorario String?
   fimTerceiroHorario    String?

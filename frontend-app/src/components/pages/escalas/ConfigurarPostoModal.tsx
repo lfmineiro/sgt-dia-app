@@ -1,15 +1,17 @@
 import { Search, X } from 'lucide-react';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
+import type { SetorLocal } from '../../../constants/setor-local';
+import { SETOR_LOCAL_LABELS } from '../../../constants/setor-local';
 import type { AlocacaoFormRow, MembroEscalaOption } from '../../../types/escala.types';
 import { obterDescricaoTurno } from '../../../utils/turno';
 import { labelDoMembro } from '../../../utils/escala.helpers';
 
 interface ConfigurarPostoModalProps {
   isOpen: boolean;
-  postos: string[];
-  postoSelecionado: string;
-  onPostoChange: (posto: string) => void;
+  postos: SetorLocal[];
+  postoSelecionado: SetorLocal;
+  onPostoChange: (posto: SetorLocal) => void;
   inicioPrimeiroHorario: string;
   fimTerceiroHorario: string;
   onInicioPrimeiroHorarioChange: (horario: string) => void;
@@ -65,12 +67,12 @@ export const ConfigurarPostoModal = ({
             <select
               id="posto-select"
               value={postoSelecionado}
-              onChange={(event) => onPostoChange(event.target.value)}
+              onChange={(event) => onPostoChange(event.target.value as SetorLocal)}
               className="h-12 w-full rounded-xl border border-slate-300 px-4 text-slate-700 focus:border-blue-500 focus:outline-none"
             >
               {postos.map((posto) => (
                 <option key={posto} value={posto}>
-                  {posto}
+                  {SETOR_LOCAL_LABELS[posto]}
                 </option>
               ))}
             </select>

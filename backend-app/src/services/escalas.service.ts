@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { SetorLocal } from "@prisma/client";
 import { prisma } from "../lib/prisma.js";
 import type {
   AtualizarEscalaInput,
@@ -10,7 +11,7 @@ import type {
 export interface EscalaLinhaView {
   id: string;
   membroGuarnicaoId: string;
-  posto: string;
+  posto: SetorLocal;
   turno: number;
   horario: string;
   aluno: string;
@@ -433,16 +434,11 @@ export const configurarEscalaService = async (
 };
 
 export const listarEscalasPorPostoService = async (
-  posto: string,
+  posto: SetorLocal,
   servicoId?: ListarEscalasPorPostoQuery["servicoId"],
 ): Promise<EscalaLinhaView[]> => {
   const escalas = await prisma.escala.findMany({
-    where: {
-      posto: {
-        equals: posto,
-        mode: "insensitive",
-      },
-    },
+    where: { posto },
     include: {
       membroGuarnicao: {
         include: {

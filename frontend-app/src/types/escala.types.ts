@@ -1,9 +1,13 @@
+import type { SetorLocal } from '../constants/setor-local';
+
+export type { SetorLocal } from '../constants/setor-local';
+
 export type CampoEditavel = 'quarto' | 'cama';
 
 export interface EscalaLinha {
   id: string;
   membroGuarnicaoId: string;
-  posto: string;
+  posto: SetorLocal;
   turno: number;
   horario: string;
   aluno: string;
@@ -20,7 +24,7 @@ export interface ConfigurarEscalaAlocacao {
 }
 
 export interface ConfigurarEscalaPayload {
-  posto: string;
+  posto: SetorLocal;
   inicioPrimeiroHorario?: string;
   fimTerceiroHorario?: string;
   alocacoes: ConfigurarEscalaAlocacao[];
