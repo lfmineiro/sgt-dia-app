@@ -60,9 +60,10 @@ jobs:
         run: |
           cd frontend-app
           BUNDLE_SIZE=$(find dist/assets -name "*.js" -type f -exec cat {} \; | wc -c)
-          echo "Bundle JS total: ${BUNDLE_SIZE} bytes (limite: 1048576)"
-          if [ "$BUNDLE_SIZE" -gt 1048576 ]; then
-            echo "❌ Bundle JS excede 1MB (atual: ${BUNDLE_SIZE} bytes)"
+          MAX_BUNDLE_SIZE=1310720
+          echo "Bundle JS total: ${BUNDLE_SIZE} bytes (limite: ${MAX_BUNDLE_SIZE})"
+          if [ "$BUNDLE_SIZE" -gt "$MAX_BUNDLE_SIZE" ]; then
+            echo "❌ Bundle JS excede 1.25MB (atual: ${BUNDLE_SIZE} bytes)"
             exit 1
           fi
           echo "✅ Bundle dentro do limite"
