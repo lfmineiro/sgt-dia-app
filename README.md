@@ -19,6 +19,7 @@ Plataforma centralizada para automatização e gestão de escalas de serviço e 
 - [Modelo de Dados](#-modelo-de-dados)
 - [Principais Funcionalidades](#-principais-funcionalidades)
 - [Guia de Instalação (Local)](#-guia-de-instalação-local)
+- [Guia de Deploy (Produção)](#-guia-de-deploy-produção)
 - [Configuração de Ambiente](#-configuração-de-ambiente)
 - [Desenvolvimento Mobile](#-desenvolvimento-mobile)
 - [Equipe](#-equipe)
@@ -154,6 +155,15 @@ Compilação automática de todos os dados do serviço (recebimento, armamento, 
 
 ---
 
+## 🏛️ Guia de Deploy (Produção)
+
+O deploy no servidor compartilhado do IME é automatizado para garantir consistência e facilidade de manutenção:
+
+1. **Automação:** O processo é realizado através do script `./scripts/deploy.sh`. Este script automatiza o `git pull`, o build das imagens Docker e realiza um *healthcheck* para confirmar que o sistema está operacional.
+2. **Infraestrutura:** A infraestrutura de produção é levantada utilizando o arquivo dedicado `docker-compose.prod.yml`, que isola o banco de dados e utiliza o Nginx como Web Server nas portas `8001` (Web) e `8002` (API).
+
+---
+
 ## ⚙️ Configuração de Ambiente
 
 Abaixo as principais variáveis necessárias no arquivo `backend-app/.env`:
@@ -164,7 +174,10 @@ Abaixo as principais variáveis necessárias no arquivo `backend-app/.env`:
 | `JWT_SECRET` | Chave secreta para tokens JWT | `sua_chave_secreta_longa` |
 | `AUTH_LOGIN_USER` | Usuário administrador padrão | `admin` |
 | `AUTH_LOGIN_PASSWORD`| Senha do administrador | `senha123` |
-| `CLOUDINARY_URL` | Configurações para upload de imagens | `cloudinary://API_KEY:API_SECRET@CLOUD_NAME` |
+| `CLOUDINARY_CLOUD_NAME` | Nome da conta Cloudinary | `seu_cloud_name` |
+| `CLOUDINARY_API_KEY` | Chave de API do Cloudinary | `sua_api_key` |
+| `CLOUDINARY_API_SECRET` | Segredo de API do Cloudinary | `seu_api_secret` |
+| `CLOUDINARY_FOLDER` | Pasta para armazenamento | `sgt_dia_alteracoes` |
 
 ---
 
