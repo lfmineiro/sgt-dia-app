@@ -1,7 +1,12 @@
 import type { Request, Response } from "express";
 import { ZodError } from "zod";
 import { criarSpedSchema, atualizarSpedSchema, spedParamSchema } from "../schemas/speds.schemas.js";
-import { obterOuCriarSpedService, atualizarSpedService, gerarTextoSpedService } from "../services/sped.service.js";
+import {
+  obterOuCriarSpedService,
+  obterSpedComTextosPadraoService,
+  atualizarSpedService,
+  gerarTextoSpedService,
+} from "../services/sped.service.js";
 
 const handleZodError = (res: Response, err: unknown) => {
   if (err instanceof ZodError) {
@@ -34,10 +39,16 @@ export const obterSped = async (req: Request, res: Response) => {
   try {
     const paramsValidados = spedParamSchema.parse(req.params);
 
-    const sped = await obterOuCriarSpedService(paramsValidados.servicoId, paramsValidados.companhia);
+    const sped = await obterSpedComTextosPadraoService(paramsValidados.servicoId, paramsValidados.companhia);
 
     return res.status(200).json(sped);
   } catch (err: unknown) {
+    if (err instanceof Error && err.message === "SERVICO_NAO_ENCONTRADO") {
+      return res.status(404).json({
+        error: "Serviço não encontrado",
+      });
+    }
+
     const zodResponse = handleZodError(res, err);
     if (zodResponse) return zodResponse;
 
