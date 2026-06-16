@@ -4,36 +4,54 @@ import type { CriarServicoBody, ServicoAtualSgtDiaDTO, AtualizarServicoInput } f
 
 export const criarNovoServico = async (input: CriarServicoBody ) => {
   const servicoCriado = await prisma.$transaction(async (tx) => {
-    
-    // Primeiro vamos fechar o serviço anterior
+
+    // Remove escalas dos membros do serviço vigente para evitar herança de dados operacionais
+    await tx.escala.deleteMany({
+      where: {
+        membroGuarnicao: {
+          servico: { status: 'EM_ANDAMENTO' },
+        },
+      },
+    })
+
+    // Fecha o serviço anterior
     await tx.servico.updateMany({
       where: { status: 'EM_ANDAMENTO' },
-      data: { status: 'FECHADO' }
+      data: { status: 'FECHADO' },
     })
 
-    // As alterações que estavam como novas, vão para pendentes
+    // Alterações que estavam como novas vão para pendentes
     await tx.alteracao.updateMany({
       where: { status: 'NOVA' },
-      data: { status: 'PENDENTE' }
+      data: { status: 'PENDENTE' },
     })
 
-
     const novoServico = await tx.servico.create({
-          data: {
-            data: input.data,
-            membrosGuarnicao: {
-              create: input.membros.map((m: { alunoNumero: number; funcao: FuncaoMembroGuarnicao }) => ({
-                alunoNumero: m.alunoNumero,
-                funcao: m.funcao,
-              })),
-            },
-          },
-          include: {
-            membrosGuarnicao: true,
-          },
-        });
-        return novoServico
-  }) 
+      data: {
+        data: input.data,
+        membrosGuarnicao: {
+          create: input.membros.map((m: { alunoNumero: number; funcao: FuncaoMembroGuarnicao }) => ({
+            alunoNumero: m.alunoNumero,
+            funcao: m.funcao,
+          })),
+        },
+      },
+      include: {
+        membrosGuarnicao: true,
+      },
+    })
+
+    // Cria registros SPED em branco para as duas companhias do novo serviço
+    await tx.sped.createMany({
+      data: [
+        { servicoId: novoServico.id, companhia: 1, recebimento: '', passagem: '' },
+        { servicoId: novoServico.id, companhia: 2, recebimento: '', passagem: '' },
+      ],
+      skipDuplicates: true,
+    })
+
+    return novoServico
+  })
   return servicoCriado
 }
 
