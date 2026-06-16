@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import type { SetorLocal } from '../constants/setor-local';
 import { configurarPostoEscalaService } from '../services/escalas.service';
 import type { AlocacaoFormRow, ConfigurarEscalaPayload, MembroEscalaOption } from '../types/escala.types';
 import {
@@ -54,13 +55,13 @@ const validaConfiguracao = (
 };
 
 export const useEscalaConfiguracao = (
-  postoAtivo: string,
-  setPostoAtivo: (posto: string) => void,
+  postoAtivo: SetorLocal,
+  setPostoAtivo: (posto: SetorLocal) => void,
   membrosPorLabel: Map<string, MembroEscalaOption>,
 ) => {
   const queryClient = useQueryClient();
   const [modalAberto, setModalAberto] = useState(false);
-  const [postoModal, setPostoModal] = useState<string>(postoAtivo);
+  const [postoModal, setPostoModal] = useState<SetorLocal>(postoAtivo);
   const [erroModal, setErroModal] = useState<string | null>(null);
   const [alocacoes, setAlocacoes] = useState<AlocacaoFormRow[]>(criarAlocacoesIniciais);
   const [inicioPrimeiroHorario, setInicioPrimeiroHorario] = useState<string>(INICIO_PRIMEIRO_HORARIO_PADRAO);
