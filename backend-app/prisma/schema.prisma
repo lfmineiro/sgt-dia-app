@@ -120,6 +120,7 @@ model Alteracao {
   descricao String
   fotoUrl   String?
   status    StatusAlteracao @default(NOVA)
+  verificada Boolean        @default(false)
   criadoEm  DateTime        @default(now())
 
   // Relacionamentos

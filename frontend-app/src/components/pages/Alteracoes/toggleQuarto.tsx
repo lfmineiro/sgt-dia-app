@@ -24,6 +24,7 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
     abrirModalEdicaoAlteracao,
     fecharModalAlteracao,
     handleResolverAlteracao,
+    handleToggleVerificada,
   } = useToggleQuarto(comodos[0]?.id)
 
   return (
@@ -31,9 +32,8 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
       {comodos.map((comodo) => {
         const isExpandido = quartosExpandidos.includes(comodo.id);
         const alteracoesComodo = alteracoes.filter((item) => item.comodo === comodo.id && item.status !== "RESOLVIDA");
-        const status = alteracoesComodo.some((item) => item.status !== "RESOLVIDA")
-          ? "Pendente"
-          : "Verificado";
+        const todasVerificadas = alteracoesComodo.length === 0 || alteracoesComodo.every((item) => item.verificada);
+        const status = todasVerificadas ? "Verificado" : "Pendente";
 
         return (
           <div
@@ -81,11 +81,12 @@ export const ToggleQuarto = ({ comodos, alteracoes, setor, onCreated }: ToggleQu
                 )}
 
                 {alteracoesComodo.map((alteracao) => (
-                  <DetalhesAlteracao 
-                    alteracao={alteracao} 
+                  <DetalhesAlteracao
+                    key={alteracao.id}
+                    alteracao={alteracao}
                     abrirModalEdicaoAlteracao={abrirModalEdicaoAlteracao}
                     handleResolverAlteracao={handleResolverAlteracao}
-                    key={alteracao.id}
+                    handleToggleVerificada={handleToggleVerificada}
                   />
                 ))}
               </div>

@@ -101,6 +101,19 @@ export async function atualizarStatusAlteracao(
   }
 }
 
+export const verificarAlteracao = async (
+  alteracaoId: string,
+  verificada: boolean,
+): Promise<Alteracao | null> => {
+  try {
+    const response = await api.patch(`/alteracoes/${alteracaoId}/verificar`, { verificada })
+    return response.data ?? null
+  } catch (error) {
+    console.error("Erro ao verificar alteração: ", error)
+    return null
+  }
+}
+
 export const removerAlteracao = async (alteracaoId: string): Promise<boolean> => {
   try {
     await api.delete(`/alteracoes/${alteracaoId}`)

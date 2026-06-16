@@ -5,9 +5,15 @@ type DetalhesAlteracaoProps = {
   alteracao: Alteracao
   abrirModalEdicaoAlteracao: (alteracao: Alteracao) => void
   handleResolverAlteracao: (id: string) => Promise<void>
+  handleToggleVerificada: (id: string, verificada: boolean) => Promise<void>
 }
 
-export const DetalhesAlteracao = ({ alteracao, abrirModalEdicaoAlteracao, handleResolverAlteracao }: DetalhesAlteracaoProps) => {
+export const DetalhesAlteracao = ({
+  alteracao,
+  abrirModalEdicaoAlteracao,
+  handleResolverAlteracao,
+  handleToggleVerificada,
+}: DetalhesAlteracaoProps) => {
   return (
     <div key={alteracao.id} className="flex gap-6">
       <div className="w-40 h-40 bg-slate-200 rounded-lg flex items-center justify-center text-slate-400 text-sm font-medium shrink-0 overflow-hidden">
@@ -27,7 +33,6 @@ export const DetalhesAlteracao = ({ alteracao, abrirModalEdicaoAlteracao, handle
         <p className="text-slate-700 font-medium">{alteracao.descricao}</p>
 
         <div className="flex flex-col gap-3">
-          
           <button
             className="px-4 py-1.5 border border-slate-200 text-slate-600 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors"
             onClick={(e) => {
@@ -43,11 +48,16 @@ export const DetalhesAlteracao = ({ alteracao, abrirModalEdicaoAlteracao, handle
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
-                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                checked={alteracao.verificada}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  void handleToggleVerificada(alteracao.id, e.target.checked)
+                }}
+                className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
               />
               <span className="text-sm text-slate-600">Alteração Verificada</span>
             </label>
-  
+
             <div>
               <button
                 className="mt-2 px-4 py-1.5 border-2 border-emerald-500 text-emerald-600 text-sm font-medium rounded-lg hover:bg-emerald-50 transition-colors"
@@ -63,6 +73,5 @@ export const DetalhesAlteracao = ({ alteracao, abrirModalEdicaoAlteracao, handle
         </div>
       </div>
     </div>
-
   )
 }

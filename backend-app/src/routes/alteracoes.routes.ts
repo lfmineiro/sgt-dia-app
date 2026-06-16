@@ -2,6 +2,7 @@ import { Router } from "express";
 import {
   atualizarDadosDaAlteracao,
   atualizarStatusDaAlteracao,
+  verificarAlteracaoController,
   criarNovaAlteracao,
   listarAlteracoesTodas,
   uploadFotoAlteracao,
@@ -16,6 +17,7 @@ router.post("/", criarNovaAlteracao);
 router.post("/upload", uploadImagem.single("foto"), uploadFotoAlteracao);
 router.patch("/:id", atualizarDadosDaAlteracao);
 router.patch("/:id/status", atualizarStatusDaAlteracao);
+router.patch("/:id/verificar", verificarAlteracaoController);
 router.delete("/:id", removerAlteracao);
 
 export default router;
