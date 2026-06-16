@@ -7,6 +7,94 @@ import { INSTALACOES_POR_COMPANHIA, TEXTO_PENDENTES } from "../constants/instala
 import { LOCAL_QUARTEL, SETOR_LOCAL_LABELS, SPED_SECOES, VALOR_AUSENTE } from "../constants/sped.js"
 import { funcaoLabel, formatDatePt, postoRank, safeValue } from "../utils/sped.utils.js"
 
+const PISTOLA_PADRAO = "12995"
+const HORA_CAUTELA_PLACEHOLDER = "[HORA_CAUTELA]"
+const HORA_DESCAUTELA_PLACEHOLDER = "[HORA_DESCAUTELA]"
+
+const formatDateNumericPt = (d: Date): string =>
+  new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).format(d)
+
+const addDays = (date: Date, days: number): Date => {
+  const nextDate = new Date(date)
+  nextDate.setDate(nextDate.getDate() + days)
+  return nextDate
+}
+
+const companhiaOrdinal = (companhia: number): string => `${companhia}ª`
+
+const buscarSgtDiaVizinho = async (
+  dataServico: Date,
+  direcao: "anterior" | "seguinte",
+) => {
+  const servico = await prisma.servico.findFirst({
+    where: {
+      data: direcao === "anterior" ? { lt: dataServico } : { gt: dataServico },
+    },
+    orderBy: {
+      data: direcao === "anterior" ? "desc" : "asc",
+    },
+    include: {
+      membrosGuarnicao: {
+        where: { funcao: "SGT_DIA" },
+        include: { aluno: true },
+      },
+    },
+  })
+
+  const sgtDia = servico?.membrosGuarnicao[0]
+  if (!servico || !sgtDia) return null
+
+  return {
+    data: servico.data,
+    aluno: sgtDia.aluno,
+  }
+}
+
+const alunoSpedPadrao = (
+  sgtDia: Awaited<ReturnType<typeof buscarSgtDiaVizinho>>,
+  nomeFallback: string,
+): string => {
+  if (!sgtDia) return `Alu [ANO] Ano CFG ${nomeFallback}`
+
+  const anoAluno = calcularAnoAluno(sgtDia.aluno.anoFormatura)
+  const anoTexto = anoAluno ? ordinal(anoAluno) : "[ANO]"
+
+  return `Alu ${anoTexto} Ano CFG ${sgtDia.aluno.nomeGuerra.toUpperCase()}`
+}
+
+const gerarTextosPadraoSped = async (servicoId: string, companhia: number) => {
+  const servico = await prisma.servico.findUnique({
+    where: { id: servicoId },
+    select: { data: true },
+  })
+
+  if (!servico) throw new Error("SERVICO_NAO_ENCONTRADO")
+
+  const [sgtDiaAnterior, sgtDiaSeguinte] = await Promise.all([
+    buscarSgtDiaVizinho(servico.data, "anterior"),
+    buscarSgtDiaVizinho(servico.data, "seguinte"),
+  ])
+
+  const dataAnterior = sgtDiaAnterior ? formatDatePt(sgtDiaAnterior.data) : "[DATA_ANTERIOR]"
+  const dataSeguinte = sgtDiaSeguinte ? formatDatePt(sgtDiaSeguinte.data) : "[DATA_PROXIMO]"
+  const diaSeguinte = addDays(servico.data, 1)
+  const diaSeguinteNumerico = formatDateNumericPt(diaSeguinte)
+  const cia = companhiaOrdinal(companhia)
+
+  return {
+    recebimento: `Recebi do ${alunoSpedPadrao(sgtDiaAnterior, "[NOME_ANTERIOR]")}, Sgt Dia da ${cia} Cia do dia ${dataAnterior}.`,
+    passagem: `Passo o serviço, com todas as ordens em vigor, ao ${alunoSpedPadrao(sgtDiaSeguinte, "[NOME_PROXIMO]")}, Sgt Dia da ${cia} Cia do dia ${dataSeguinte}.`,
+    armamento: [
+      `a. Cautelei a pistola ${PISTOLA_PADRAO} às ${HORA_CAUTELA_PLACEHOLDER} do dia ${diaSeguinteNumerico} e descautelei às ${HORA_DESCAUTELA_PLACEHOLDER} do dia ${diaSeguinteNumerico}.`,
+      `b. Cautelei 7 munições às ${HORA_CAUTELA_PLACEHOLDER} do dia ${diaSeguinteNumerico} e descautelei às ${HORA_DESCAUTELA_PLACEHOLDER} do dia ${diaSeguinteNumerico}.`,
+    ].join("\n"),
+  }
+}
+
 export const obterOuCriarSpedService = async (
   servicoId: string,
   companhia: number,
@@ -27,6 +115,21 @@ export const obterOuCriarSpedService = async (
       passagem: "",
     },
   })
+}
+
+export const obterSpedComTextosPadraoService = async (
+  servicoId: string,
+  companhia: number,
+) => {
+  const [sped, textosPadrao] = await Promise.all([
+    obterOuCriarSpedService(servicoId, companhia),
+    gerarTextosPadraoSped(servicoId, companhia),
+  ])
+
+  return {
+    ...sped,
+    textosPadrao,
+  }
 }
 
 export const atualizarSpedService = async (

@@ -19,6 +19,12 @@ export interface AtualizarSpedPayload {
   ocorrencias?: string;
 }
 
+export interface SpedTextosPadrao {
+  recebimento: string;
+  passagem: string;
+  armamento: string;
+}
+
 export interface SpedResponse {
   id?: string;
   servicoId: string;
@@ -34,6 +40,7 @@ export interface SpedResponse {
   ronda?: string | null;
   revistaRecolher?: string | null;
   ocorrencias?: string | null;
+  textosPadrao?: SpedTextosPadrao;
 }
 
 export interface SpedTextoResponse {
