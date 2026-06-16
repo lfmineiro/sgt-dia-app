@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import type { SetorLocal } from '../constants/setor-local';
 import { buscarMembrosEscalaService, listarEscalasPorPostoService } from '../services/escalas.service';
 import type { MembroEscalaOption } from '../types/escala.types';
 import {
@@ -17,7 +18,7 @@ const formatarDataExtenso = () => {
   }).format(new Date());
 };
 
-export const useEscalaListData = (postoAtivo: string) => {
+export const useEscalaListData = (postoAtivo: SetorLocal) => {
 
   const dataExtenso = useMemo(() => formatarDataExtenso(), []);
 
