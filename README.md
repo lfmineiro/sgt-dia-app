@@ -20,6 +20,7 @@ Plataforma centralizada para automatização e gestão de escalas de serviço e 
 - [Principais Funcionalidades](#-principais-funcionalidades)
 - [Guia de Instalação (Local)](#-guia-de-instalação-local)
 - [Guia de Deploy (Produção)](#-guia-de-deploy-produção)
+- [Estrutura do Projeto](#-estrutura-do-projeto-monorepo)
 - [Configuração de Ambiente](#-configuração-de-ambiente)
 - [Desenvolvimento Mobile](#-desenvolvimento-mobile)
 - [Equipe](#-equipe)
@@ -161,6 +162,32 @@ O deploy no servidor compartilhado do IME é automatizado para garantir consist�
 
 1. **Automação:** O processo é realizado através do script `./scripts/deploy.sh`. Este script automatiza o `git pull`, o build das imagens Docker e realiza um *healthcheck* para confirmar que o sistema está operacional.
 2. **Infraestrutura:** A infraestrutura de produção é levantada utilizando o arquivo dedicado `docker-compose.prod.yml`, que isola o banco de dados e utiliza o Nginx como Web Server nas portas `8001` (Web) e `8002` (API).
+
+---
+
+## 📁 Estrutura do Projeto (Monorepo)
+
+O projeto está organizado em um monorepo, facilitando a gestão de dependências e o compartilhamento de configurações entre os diferentes módulos:
+
+```text
+.
+├── backend-app/           # API RESTful (Node.js/Express)
+│   └── src/
+│       ├── controllers/   # Lógica de manipulação de requisições
+│       ├── services/      # Camada de regras de negócio
+│       ├── routes/        # Definições de endpoints da API
+│       └── schemas/       # Validação de dados (Zod)
+├── frontend-app/          # Dashboard Web (React/Vite)
+│   └── src/
+│       ├── components/    # UI (ui/ e layout/)
+│       ├── pages/         # Páginas principais
+│       ├── hooks/         # Lógica de estado e efeitos
+│       └── services/      # Comunicação com a API
+├── mobile-app/            # Aplicativo Mobile (Expo)
+├── scripts/               # Utilitários (deploy.sh, reseed.sh)
+├── docker-compose.yml     # Configuração Docker (Dev)
+└── docker-compose.prod.yml # Configuração Docker (Prod)
+```
 
 ---
 
