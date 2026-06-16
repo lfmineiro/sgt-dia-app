@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { atualizarStatusAlteracao } from "../services/alteracao.service"
+import { atualizarStatusAlteracao, verificarAlteracao } from "../services/alteracao.service"
 import { useQueryClient } from "@tanstack/react-query"
 import type { Alteracao } from "../types/alterecao.types"
 
@@ -44,6 +44,18 @@ export const useToggleQuarto = (initialExpandedComodoId?: string) => {
     await queryClient.invalidateQueries({ queryKey: ["alteracoesAtuais"] })
   }
 
+  const handleToggleVerificada = async (alteracaoId: string, verificada: boolean) => {
+    queryClient.setQueryData<Alteracao[]>(["alteracoesAtuais"], (atual) =>
+      atual?.map((a) => (a.id === alteracaoId ? { ...a, verificada } : a)),
+    )
+
+    const resultado = await verificarAlteracao(alteracaoId, verificada)
+
+    if (!resultado) {
+      await queryClient.invalidateQueries({ queryKey: ["alteracoesAtuais"] })
+    }
+  }
+
   return {
     quartosExpandidos,
     isModalOpen,
@@ -54,5 +66,6 @@ export const useToggleQuarto = (initialExpandedComodoId?: string) => {
     abrirModalEdicaoAlteracao,
     fecharModalAlteracao,
     handleResolverAlteracao,
+    handleToggleVerificada,
   }
 }

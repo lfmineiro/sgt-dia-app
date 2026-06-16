@@ -42,5 +42,11 @@ export const atualizarAlteracaoSchema = z
 
 export type AtualizarAlteracaoInput = z.infer<typeof atualizarAlteracaoSchema>;
 
+export const verificarAlteracaoSchema = z.object({
+  verificada: z.boolean(),
+});
+
+export type VerificarAlteracaoInput = z.infer<typeof verificarAlteracaoSchema>;
+
 
 

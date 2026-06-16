@@ -4,6 +4,7 @@ import type {
   AtualizarAlteracaoInput,
   CriarAlteracaoInput,
   ListarAlteracoesQueryInput,
+  VerificarAlteracaoInput,
 } from "../schemas/alteracao.schemas.js"
 
 
@@ -91,6 +92,25 @@ export const atualizarAlteracao = async (
   return prisma.alteracao.update({
     where: { id },
     data: dadosParaAtualizacao,
+  })
+}
+
+export const verificarAlteracao = async (
+  id: string,
+  dados: VerificarAlteracaoInput,
+): Promise<Alteracao> => {
+  const alteracaoExistente = await prisma.alteracao.findUnique({
+    where: { id },
+    select: { id: true },
+  })
+
+  if (!alteracaoExistente) {
+    throw new Error("ALTERACAO_NAO_ENCONTRADA")
+  }
+
+  return prisma.alteracao.update({
+    where: { id },
+    data: { verificada: dados.verificada },
   })
 }
 

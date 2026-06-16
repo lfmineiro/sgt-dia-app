@@ -9,6 +9,7 @@ export interface Alteracao {
   fotoUrl: string | null,
   comodo: string,
   status: StatusAlteracao,
+  verificada: boolean,
 }
 
 export interface CriarAlteracaoInput {

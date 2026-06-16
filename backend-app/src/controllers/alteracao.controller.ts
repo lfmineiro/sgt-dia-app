@@ -4,14 +4,17 @@ import {
 	alteracaoIdParamSchema,
 	atualizarAlteracaoSchema,
 	atualizarStatusAlteracaoSchema,
+	verificarAlteracaoSchema,
 	listarAlteracoesQuerySchema,
 	criarAlteracaoSchema,
 	type AtualizarStatusAlteracaoInput,
 	type AtualizarAlteracaoInput,
+	type VerificarAlteracaoInput,
 } from "../schemas/alteracao.schemas.js";
 import {
 	atualizarAlteracao,
 	atualizarStatusAlteracao,
+	verificarAlteracao,
 	criarAlteracao,
 	listarAlteracoes,
 	deletarAlteracao,
@@ -122,6 +125,17 @@ return responderAtualizacaoDaAlteracao(
 	"Erro ao atualizar alteração: ",
 	"Erro interno do servidor ao atualizar alteração",
 );
+};
+
+export const verificarAlteracaoController = async (req: Request, res: Response) => {
+	return responderAtualizacaoDaAlteracao(
+		req,
+		res,
+		verificarAlteracaoSchema,
+		async (id, dados) => verificarAlteracao(id, dados as VerificarAlteracaoInput),
+		"Erro ao verificar alteração: ",
+		"Erro interno do servidor ao verificar alteração",
+	);
 };
 
 export const uploadFotoAlteracao = async (req: Request, res: Response) => {
