@@ -1,0 +1,201 @@
+# Sistema de Gestão de Serviço de Alunos e SPED 🛡️
+
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-000020?style=for-the-badge&logo=expo&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-3982CE?style=for-the-badge&logo=Prisma&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+
+Plataforma centralizada para automatização e gestão de escalas de serviço e relatórios SPED, desenvolvida para o **Instituto Militar de Engenharia (IME)** no âmbito da disciplina de Laboratório de Programação III.
+
+---
+
+## 📖 Sumário
+
+- [Visão Geral](#-visão-geral)
+- [Arquitetura do Sistema](#-arquitetura-do-sistema)
+- [Modelo de Dados](#-modelo-de-dados)
+- [Principais Funcionalidades](#-principais-funcionalidades)
+- [Guia de Instalação (Local)](#-guia-de-instalação-local)
+- [Configuração de Ambiente](#-configuração-de-ambiente)
+- [Desenvolvimento Mobile](#-desenvolvimento-mobile)
+- [Equipe](#-equipe)
+
+---
+
+## 🌟 Visão Geral
+
+O sistema resolve a fragmentação e a burocracia na gestão dos serviços diários dos alunos do IME. Substituindo processos manuais e descentralizados, a plataforma permite:
+
+- **Automatização:** Geração de escalas de quartos de hora dos Plantões com suas informações.
+- **Tempo Real:** Registro de alterações em alojamentos via Mobile com suporte a evidências fotográficas.
+- **Conformidade:** Geração automática do relatório SPED em formato Markdown para integração direta em sistemas oficiais.
+
+---
+
+## 🏗️ Arquitetura do Sistema
+
+O sistema utiliza uma arquitetura moderna baseada em micro-containers e comunicação via API RESTful.
+
+### 🏠 Ambiente de Desenvolvimento (Local)
+Otimizado para agilidade, utiliza o servidor de desenvolvimento do Vite com *Hot Module Replacement* (HMR).
+
+```mermaid
+graph LR
+    User([Desenvolvedor]) --> Web[Frontend :5173 - Vite Dev]
+    User --> API[Backend :3000 - TSX Watch]
+    Web --> API
+    API --> DB[(PostgreSQL :5433)]
+```
+### 🚀 Ambiente de Produção (Servidor IME)
+
+```mermaid
+graph TD
+    User([Usuário / Aluno]) --> Nginx[Nginx Reverse Proxy]
+    Nginx --> Web[Frontend Web - React/Vite]
+    Nginx --> API[Backend API - Node.js/Express]
+    Mobile[App Mobile - Expo] --> API
+    API --> Prisma[Prisma ORM]
+    Prisma --> DB[(PostgreSQL)]
+    API --> Cloudinary[Cloudinary - Storage de Fotos]
+```
+
+---
+
+## 📊 Modelo de Dados
+
+O esquema de banco de dados foi desenhado para suportar a complexidade das escalas e a hierarquia do corpo de alunos.
+
+```mermaid
+erDiagram
+    ALUNO ||--o{ MEMBRO_GUARNICAO : "é atribuído"
+    SERVICO ||--|{ MEMBRO_GUARNICAO : "possui"
+    SERVICO ||--o{ SPED : "gera"
+    SERVICO ||--o{ ALTERACAO : "contém"
+    SERVICO ||--o{ AVISO : "exibe"
+    MEMBRO_GUARNICAO ||--o{ ESCALA : "executa"
+    
+    ALUNO {
+        int numero PK
+        string nomeGuerra
+        string nomeCompleto
+        int anoFormatura
+    }
+    SERVICO {
+        uuid id PK
+        datetime data
+        string status
+    }
+    ALTERACAO {
+        uuid id PK
+        string local
+        string comodo
+        string descricao
+        string fotoUrl
+        boolean verificada
+    }
+    ESCALA {
+        uuid id PK
+        string posto
+        int turno
+        string quarto
+    }
+```
+
+---
+
+## 🚀 Principais Funcionalidades
+
+### 📅 Módulo de Escala
+Gestão completa das escalas diárias, definindo turnos, locais e responsabilidades para cada membro da guarnição.
+
+### 📸 Gestão de Alterações
+Registro dinâmico de ocorrências nos alojamentos (limpeza, infraestrutura, etc.) com upload de fotos via Cloudinary e monitoramento de resolução.
+
+### 📝 Relatório SPED
+Compilação automática de todos os dados do serviço (recebimento, armamento, punidos, refeições, etc.) em um formato Markdown otimizado para *copy-paste* na plataforma oficial de despachos.
+
+---
+
+## 🛠️ Guia de Instalação (Local)
+
+### Pré-requisitos
+- [Docker](https://www.docker.com/) e [Docker Compose](https://docs.docker.com/compose/) instalados.
+- [Node.js](https://nodejs.org/) (versão 20+ recomendada) para o módulo mobile.
+
+### Passo a Passo
+
+1. **Clonar o Repositório:**
+   ```bash
+   git clone <repo-url>
+   cd sgt-dia-app
+   ```
+
+2. **Configurar Variáveis de Ambiente:**
+   Crie um arquivo `.env` na pasta `backend-app/` seguindo o modelo `.env.example`.
+   ```bash
+   cp backend-app/.env.example backend-app/.env
+   ```
+
+3. **Subir Infraestrutura com Docker:**
+   Execute o comando abaixo para iniciar o Banco de Dados, API e Frontend Web:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+4. **Seed do Banco de Dados:**
+   Para popular o sistema com dados de teste e o usuário padrão:
+   ```bash
+   docker exec -it sgt_dia_backend npx prisma db seed
+   ```
+   *Nota: O script de seed utiliza as credenciais `AUTH_LOGIN_USER` e `AUTH_LOGIN_PASSWORD` definidas no seu `.env`.*
+
+---
+
+## ⚙️ Configuração de Ambiente
+
+Abaixo as principais variáveis necessárias no arquivo `backend-app/.env`:
+
+| Variável | Descrição | Exemplo |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | String de conexão com PostgreSQL | `postgresql://admin:adminpassword@localhost:5433/sped_db` |
+| `JWT_SECRET` | Chave secreta para tokens JWT | `sua_chave_secreta_longa` |
+| `AUTH_LOGIN_USER` | Usuário administrador padrão | `admin` |
+| `AUTH_LOGIN_PASSWORD`| Senha do administrador | `senha123` |
+| `CLOUDINARY_URL` | Configurações para upload de imagens | `cloudinary://API_KEY:API_SECRET@CLOUD_NAME` |
+
+---
+
+## 📱 Desenvolvimento Mobile
+
+O módulo mobile utiliza **Expo Managed Workflow**. Para executá-lo:
+
+1. Acesse a pasta:
+   ```bash
+   cd mobile-app
+   ```
+
+2. Instale as dependências:
+   ```bash
+   npm install
+   ```
+
+3. Inicie o Metro Bundler:
+   ```bash
+   npx expo start
+   ```
+   Use o QR Code no seu celular (App Expo Go) ou um emulador Android/iOS.
+
+---
+
+## 👥 Equipe
+
+Trabalho desenvolvido para a disciplina de Laboratório de Programação III - IME:
+
+- **Álisson Nunes**
+- **Nivaldo Pereira**
+- **Luiz Fernando Lessa Mineiro Albuquerque**
+
+
